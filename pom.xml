@@ -39,18 +39,6 @@
             <artifactId>client-management-lib</artifactId>
             <version>1.0.0</version>
             <type>jar</type>
-        </dependency>               
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>legal-office-lib</artifactId>
-            <version>1.0.0</version>
-            <type>jar</type>
-        </dependency>      
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>purchase-management-library</artifactId>
-            <version>1.0.0</version>
-            <type>jar</type>
         </dependency>   
     </dependencies>
 </project>
