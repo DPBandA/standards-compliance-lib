@@ -25,6 +25,7 @@ import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.gm.UserManagement;
 import jm.com.dpbennett.business.entity.hrm.Contact;
+import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sc.CompanyRegistration;
 import jm.com.dpbennett.business.entity.sc.ComplianceDailyReport;
@@ -40,7 +41,10 @@ import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.sm.manager.SystemManager;
 import jm.com.dpbennett.sm.util.BeanUtils;
+import jm.com.dpbennett.sm.util.MainTabView;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -59,7 +63,7 @@ import org.primefaces.model.UploadedFile;
  */
 @ManagedBean
 @SessionScoped
-public class ComplianceManager implements Serializable {
+public class ComplianceManager implements Serializable, Authentication.AuthenticationListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF1;
@@ -98,6 +102,16 @@ public class ComplianceManager implements Serializable {
      * Creates a new instance of ComplianceManager.
      */
     public ComplianceManager() {
+        init();
+    }
+
+    private void init() {
+        reset();
+
+        getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public void reset() {
         complianceSurveys = new ArrayList<>();
         documentInspections = new ArrayList<>();
         dateSearchField = "dateFirstReceived";
@@ -105,14 +119,24 @@ public class ComplianceManager implements Serializable {
         searchType = "General";
         dateSearchPeriod = "This month";
         reportPeriod = "This month";
-        activeTabTitle = "Compliance Survey";
+        activeTabTitle = "Standards Compliance";
         currentComplianceDailyReport
                 = new ComplianceDailyReport("Report-" + new Date().toString(),
                         new Date(), "Berth 11", " ");
         datePeriod = new DatePeriod("This month", "month", null, null, null, null, false, false, false);
         datePeriod.initDatePeriod();
     }
-    
+
+    /**
+     * Gets the SystemManager object as a session bean.
+     *
+     * @return
+     */
+    public SystemManager getSystemManager() {
+
+        return BeanUtils.findBean("systemManager");
+    }
+
     /**
      * Gets the title of the application which may be saved in a database.
      *
@@ -141,7 +165,6 @@ public class ComplianceManager implements Serializable {
 //
 //        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
 //    }
-
     public void consigneeDialogReturn() {
         if (clientManager.getSelectedClient().getId() != null) {
             currentComplianceSurvey.setConsignee(clientManager.getSelectedClient());
@@ -154,7 +177,6 @@ public class ComplianceManager implements Serializable {
 //
 //        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
 //    }
-
     public List<Contact> completeConsigneetContact(String query) {
         List<Contact> contacts = new ArrayList<>();
 
@@ -188,14 +210,12 @@ public class ComplianceManager implements Serializable {
 //    public JobManagerUser getUser() {
 //        return getJobManager().getUser();
 //    }
-
 //    public JobManager getJobManager() {
 //        if (jobManager == null) {
 //            jobManager = BeanUtils.findBean("jobManager");
 //        }
 //        return jobManager;
 //    }
-
     public ClientManager getClientManager() {
         if (clientManager == null) {
             clientManager = BeanUtils.findBean("clientManager");
@@ -1016,7 +1036,6 @@ public class ComplianceManager implements Serializable {
 //
 //        openSurveyBrowser();
 //    }
-
     public List<String> completeSearchText(String query) {
         List<String> suggestions = new ArrayList<>();
 
@@ -1650,5 +1669,35 @@ public class ComplianceManager implements Serializable {
 
     public Boolean isDirty() { // tk delete
         return false; //dirty;
+    }
+
+    public User getUser() {
+        return getSystemManager().getAuthentication().getUser();
+    }
+
+    private void initMainTabView() {
+
+        if (getUser().getModules().getJobManagementAndTrackingModule()) {
+            getSystemManager().getMainTabView().openTab("Standards Compliance");
+        }
+
+    }
+
+    private void initDashboard() {
+
+        if (getUser().getModules().getJobManagementAndTrackingModule()) {
+            getSystemManager().getDashboard().openTab("Standards Compliance");
+        }
+    }
+
+    @Override
+    public void completeLogin() {
+        initDashboard();
+        initMainTabView();
+    }
+
+    @Override
+    public void completeLogout() {
+        reset();
     }
 }
