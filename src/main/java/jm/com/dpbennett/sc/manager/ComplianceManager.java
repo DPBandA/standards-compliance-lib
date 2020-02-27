@@ -200,11 +200,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 600, 700);
     }
 
-//    public void openSurveyBrowser() {
-//        // Add the Job Browser tab is 
-//        getJobManager().getMainTabView().addTab(getEntityManager1(), "Survey Browser", true);
+    public void openSurveyBrowser() {
+        // Add the Job Browser tab is 
+//        getSystemManager().getMainTabView().addTab(getEntityManager1(), "Survey Browser", true);
 //        getJobManager().getMainTabView().select("Survey Browser");
-//    }
+        getSystemManager().getMainTabView().openTab("Standards Compliance");
+    }
 //
 //    public JobManagerUser getUser() {
 //        return getJobManager().getUser();
@@ -215,6 +216,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //        }
 //        return jobManager;
 //    }
+
     public ClientManager getClientManager() {
         if (clientManager == null) {
             clientManager = BeanUtils.findBean("clientManager");
@@ -1022,19 +1024,32 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
+    
+    public void doDefaultSearch() {
 
-//    public void doSurveySearch() {
-//        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
-//                getUser(),
-//                dateSearchField,
-//                "General",
-//                searchText,
-//                getDatePeriod().getStartDate(),
-//                getDatePeriod().getEndDate(),
-//                false);
-//
-//        openSurveyBrowser();
-//    }
+        switch (getSystemManager().getDashboard().getSelectedTabId()) {           
+            case "Standards Compliance":
+                doSurveySearch();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    public void doSurveySearch() {
+        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
+                getUser(),
+                dateSearchField,
+                "General",
+                searchText,
+                getDatePeriod().getStartDate(),
+                getDatePeriod().getEndDate(),
+                false);
+
+        openSurveyBrowser();
+    }
+
     public List<String> completeSearchText(String query) {
         List<String> suggestions = new ArrayList<>();
 
