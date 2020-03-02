@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.cm.Client;
-import jm.com.dpbennett.business.entity.gm.UserManagement;
 import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -51,7 +50,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
@@ -71,7 +69,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private ProductInspection currentProductInspection;
     private SampleRequest currentSampleRequest;
     private CompanyRegistration currentCompanyRegistration;
-    private UserManagement userManagement;
     private Boolean isNewProductInspection = false;
     private Boolean isNewComplianceSurvey = false;
     private Boolean isNewDocumentInspection = false;
@@ -84,7 +81,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private String dateSearchPeriod;
     private String reportPeriod;
     private String searchType;
-    private String activeTabTitle;
     private String dialogMessage;
     private String dialogMessageHeader;
     private String dialogMessageSeverity;
@@ -118,7 +114,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         searchType = "General";
         dateSearchPeriod = "This month";
         reportPeriod = "This month";
-        activeTabTitle = "Standards Compliance";
         currentComplianceDailyReport
                 = new ComplianceDailyReport("Report-" + new Date().toString(),
                         new Date(), "Berth 11", " ");
@@ -195,9 +190,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public void openComplianceSurvey() {
-        // tk set dirty false here
-
-        PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 600, 700);
+        PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 700);
     }
 
     public void openSurveyBrowser() {
@@ -355,7 +348,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
-            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUserManagement().getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUser().getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
@@ -367,7 +360,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() == null) {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
-            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUserManagement().getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUser().getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
@@ -379,8 +372,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUserManagement().getUser().getEmployee().getSignature());
-            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUserManagement().getUser().getEmployee());
+            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
         } else {
             currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(null);
             currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
@@ -393,7 +386,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() == null) {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
-            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUserManagement().getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUser().getEmployee().getSignature());
         } else {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
@@ -405,8 +398,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() == null) {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
-            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUserManagement().getUser().getEmployee().getSignature());
-            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUserManagement().getUser().getEmployee());
+            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
         } else {
             currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(null);
             currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
@@ -414,15 +407,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
-
-    public UserManagement getUserManagement() {
-        return userManagement;
-    }
-
-    public void setUserManagement(UserManagement userManagement) {
-        this.userManagement = userManagement;
-    }
-
+    
     public ComplianceDailyReport getCurrentComplianceDailyReport() {
         return currentComplianceDailyReport;
     }
@@ -716,28 +701,28 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void createNewComplianceSurvey() {
 //        RequestContext context = RequestContext.getCurrentInstance();
 //        EntityManager em = getEntityManager1();
-//
-//        currentComplianceSurvey = new ComplianceSurvey();
-//        currentComplianceSurvey.setSurveyType(" ");
-//        // consignee and rep
-//        currentComplianceSurvey.setConsignee(new Client("", false));
-//        currentComplianceSurvey.setConsigneeRepresentative(new Contact(""));
-//        // retail outlet and rep
-//        currentComplianceSurvey.setRetailOutlet(new Client("", false));
-//        currentComplianceSurvey.setRetailRepresentative(new Contact(""));
-//        // broker and rep
-//        currentComplianceSurvey.setBroker(new Client("", false));
-//        currentComplianceSurvey.setBrokerRepresentative(new Contact(""));
-//
-//        currentComplianceSurvey.getEntryDocumentInspection().setCountryOfConsignment(" ");
-//        currentComplianceSurvey.setDateOfSurvey(new Date());
-//        if (userManagement.getUser() != null) {
-//            currentComplianceSurvey.setInspector(userManagement.getUser().getEmployee());
-//        }
-//
-//        isNewComplianceSurvey = true;
-//        setDirty(false);
 
+        currentComplianceSurvey = new ComplianceSurvey();
+        currentComplianceSurvey.setSurveyType(" ");
+        // consignee and rep
+        currentComplianceSurvey.setConsignee(new Client("", false));
+        currentComplianceSurvey.setConsigneeRepresentative(new Contact(""));
+        // retail outlet and rep
+        currentComplianceSurvey.setRetailOutlet(new Client("", false));
+        currentComplianceSurvey.setRetailRepresentative(new Contact(""));
+        // broker and rep
+        currentComplianceSurvey.setBroker(new Client("", false));
+        currentComplianceSurvey.setBrokerRepresentative(new Contact(""));
+
+        currentComplianceSurvey.getEntryDocumentInspection().setCountryOfConsignment(" ");
+        currentComplianceSurvey.setDateOfSurvey(new Date());
+        if (getUser() != null) {
+            currentComplianceSurvey.setInspector(getUser().getEmployee());
+        }
+
+        isNewComplianceSurvey = true;
+        
+        editComplianceSurvey();
     }
 
     public void createNewDocumentInspection() {
@@ -748,8 +733,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentDocumentInspection.setName(" ");
         currentComplianceSurvey.setConsignee(new Client("", false));
         currentDocumentInspection.setDateOfInspection(new Date());
-        if (userManagement.getUser() != null) {
-            currentDocumentInspection.setInspector(userManagement.getUser().getEmployee());
+        if (getUser() != null) {
+            currentDocumentInspection.setInspector(getUser().getEmployee());
         }
 
         //setDirty(false);
@@ -946,10 +931,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         System.out.println("impl updateDocumentInspectionInspector");
     }
 
-    public void onMainTabChange(TabChangeEvent event) {
-        activeTabTitle = event.getTab().getTitle();
-    }
-
     public String getSurveyFormComponentsToUpdate() {
         return ":marketProductSurveyDialogForm:retailOutlet,"
                 + ":marketProductSurveyDialogForm:inspector,"
@@ -1066,7 +1047,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         FileOutputStream fout;
         UploadedFile upLoadedFile = event.getFile();
         String baseURL = "\\\\bosprintsrv\\c$\\uploads\\images"; // ".\\uploads\\images\\" +  // tk to be made system option
-        String upLoadedFileName = userManagement.getUser().getId() + "_"
+        String upLoadedFileName = getUser().getId() + "_"
                 + new Date().getTime() + "_"
                 + upLoadedFile.getFileName();
 
