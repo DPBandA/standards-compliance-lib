@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
@@ -42,6 +40,7 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.SystemManager;
+import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import net.sf.jasperreports.engine.JRException;
@@ -58,8 +57,6 @@ import org.primefaces.model.UploadedFile;
  *
  * @author Desmond Bennett
  */
-@ManagedBean
-@SessionScoped
 public class ComplianceManager implements Serializable, Authentication.AuthenticationListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
@@ -249,7 +246,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public List getComplianceDateSearchFields() {
         ArrayList dateFields = new ArrayList();
 
-        // add items
         dateFields.add(new SelectItem("dateOfSurvey", "Date of survey"));
 
         return dateFields;
@@ -407,7 +403,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
-    
+
     public ComplianceDailyReport getCurrentComplianceDailyReport() {
         return currentComplianceDailyReport;
     }
@@ -479,7 +475,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         try {
             EntityManager em = getEntityManager1();
 
-            List<String> names = new ArrayList<String>();
+            List<String> names = new ArrayList<>();
             List<Manufacturer> manufacturers = Manufacturer.findManufacturersBySearchPattern(em, query);
             for (Manufacturer manufacturer : manufacturers) {
                 names.add(manufacturer.getName());
@@ -490,7 +486,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         } catch (Exception e) {
             System.out.println(e);
 
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 
@@ -498,7 +494,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         try {
             EntityManager em = getEntityManager1();
 
-            List<String> names = new ArrayList<String>();
+            List<String> names = new ArrayList<>();
             List<Distributor> distributors = Distributor.findDistributorsBySearchPattern(em, query);
             for (Distributor distributor : distributors) {
                 names.add(distributor.getName());
@@ -509,12 +505,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         } catch (Exception e) {
             System.out.println(e);
 
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
     }
 
     public List<Contact> completeRetailOutletRepresentative(String query) {
-        ArrayList<Contact> contactsFound = new ArrayList<Contact>();
+        ArrayList<Contact> contactsFound = new ArrayList<>();
 
         for (Contact contact : currentComplianceSurvey.getRetailOutlet().getContacts()) {
             if (contact.getFirstName().toUpperCase().contains(query.trim().toUpperCase())
@@ -569,13 +565,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public List<String> completeComplianceSurveyBrokerRepresentativeName(String query) {
-        ArrayList<String> contactsFound = new ArrayList<String>();
+        ArrayList<String> contactsFound = new ArrayList<>();
 
         return contactsFound;
 
     }
 
-    // tk needed??
     public void createNewMarketProduct() {
 
     }
@@ -721,7 +716,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
         isNewComplianceSurvey = true;
-        
+
         editComplianceSurvey();
     }
 
@@ -787,147 +782,47 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         System.out.println("impl save()");
     }
 
-    public List getProductStatus() {
-        ArrayList types = new ArrayList();
+    public List<SelectItem> getProductStatus() {
 
-        types.add(new SelectItem("-- select status --", "-- select status --"));
-        types.add(new SelectItem("Satisfactory", "Satisfactory"));
-        types.add(new SelectItem("Unsatisfactory", "Unsatisfactory"));
-
-        return types;
+        return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
     }
 
-    public List getShippingContainerDetainPercentages() {
-        ArrayList types = new ArrayList();
-
-        types.add(new SelectItem("0", "0"));
-        types.add(new SelectItem("25", "25"));
-        types.add(new SelectItem("50", "50"));
-        types.add(new SelectItem("75", "75"));
-        types.add(new SelectItem("100", "100"));
-
-        return types;
+    public List<SelectItem> getShippingContainerDetainPercentages() {
+        return getStringListAsSelectItems(getEntityManager1(), "shippingContainerPercentageList");
     }
-
-    public List getCountries() {
-
-        // tk see how this is impl. elsewhere
-        EntityManager em = getEntityManager1();
-        ArrayList countriesList = new ArrayList();
-        countriesList.add(new SelectItem(" ", " "));
-        countriesList.add(new SelectItem("-- Not displayed --", "-- Not displayed --"));
-
-        List<Country> countries = Country.findAllCountries(em);
-        for (Country country : countries) {
-            countriesList.add(new SelectItem(country.getName(), country.getName()));
-        }
-
-        return countriesList;
-    }
-
-    // tk put in db
-    public List getReportNames() {
-        ArrayList names = new ArrayList();
-
-        names.add(new SelectItem("Daily Report", "Daily Report"));
-
-        return names;
-    }
-
-    // tk put in db
-    public List getPortsOfEntry() {
-        ArrayList types = new ArrayList();
-
-        types.add(new SelectItem("--", "--"));
-        types.add(new SelectItem("-- N/A --", "-- N/A --"));
-        types.add(new SelectItem("Adolph Levy warehouse", "Adolph Levy warehouse"));
-        types.add(new SelectItem("Airport", "Airport"));
-        types.add(new SelectItem("Berth 1", "Berth 1"));
-        types.add(new SelectItem("Berth 2", "Berth 2"));
-        types.add(new SelectItem("Berth 3", "Berth 3"));
-        types.add(new SelectItem("Berth 4", "Berth 4"));
-        types.add(new SelectItem("Berth 5", "Berth 5"));
-        types.add(new SelectItem("Berth 6", "Berth 6"));
-        types.add(new SelectItem("Berth 7", "Berth 7"));
-        types.add(new SelectItem("Berth 8", "Berth 8"));
-        types.add(new SelectItem("Berth 9", "Berth 9"));
-        types.add(new SelectItem("Berth 10", "Berth 10"));
-        types.add(new SelectItem("Berth 11", "Berth 11"));
-        types.add(new SelectItem("CKL", "CKL"));
-        types.add(new SelectItem("Harbour cold storage", "Harbour cold storage"));
-        types.add(new SelectItem("Kingston Logistics Centre", "Kingston Logistics Centre"));
-        types.add(new SelectItem("Kingston Wharf", "Kingston Wharf"));
-        types.add(new SelectItem("Port handlers", "Port handlers"));
-        types.add(new SelectItem("Precision cold storage", "Precision cold storage"));
-        types.add(new SelectItem("Seaboard freight", "Seaboard freight"));
-        types.add(new SelectItem("Universal Freight Handlers", "Universal Freight Handlers"));
-        types.add(new SelectItem("Zero cold storage", "Zero cold storage"));
-
-        return types;
+ 
+    public List<SelectItem> getPortsOfEntry() {
+        
+        return getStringListAsSelectItems(getEntityManager1(), "compliancePortsOfEntry");
     }
 
     public List getInspectionPoints() {
-        ArrayList points = new ArrayList();
-
-        points.add(new SelectItem("-- N/A --", "-- N/A --"));
-        points.add(new SelectItem("One Stop Shop", "One Stop Shop"));
-        points.add(new SelectItem("Stripping Station", "Stripping Station"));
-
-        return points;
+        
+        return getStringListAsSelectItems(getEntityManager1(), "complianceSurveyMiscellaneousInspectionPointList");
     }
-
+    
     public List getDocumentInspectionActions() {
-        ArrayList points = new ArrayList();
 
-        points.add(new SelectItem("None", "None"));
-        points.add(new SelectItem("Stamped 'To Be Inspected'", "Stamped 'To Be Inspected'"));
-        points.add(new SelectItem("Stamped 'Document Seen'", "Stamped 'Document Seen'"));
-
-        return points;
+        return getStringListAsSelectItems(getEntityManager1(), "portOfEntryDocumentStampList");
     }
 
-    // tk put in db
-    public List getSurveyTypes() {
-        ArrayList types = new ArrayList();
+    public List<SelectItem> getSurveyTypes() {
 
-        types.add(new SelectItem("", ""));
-        types.add(new SelectItem("Market Survey", "Market Survey"));
-        types.add(new SelectItem("Product Survey", "Product Survey"));
-
-        return types;
+        return getStringListAsSelectItems(getEntityManager1(), "complianceSurveyTypes");
     }
 
-    // tk put in db
     public List getSampleSources() {
-        ArrayList types = new ArrayList();
 
-        types.add(new SelectItem("Domestic Market", "Domestic Market"));
-        types.add(new SelectItem("Port of Entry", "Port of Entry"));
-
-        return types;
+        return getStringListAsSelectItems(getEntityManager1(), "complianceSampleSources");
     }
 
-//    public List<Employee> completeEmployee(String query) {
-//
-//        try {
-//            List<Employee> employees = Employee.findEmployeesByName(getEntityManager1(), query);
-//            if (employees != null) {
-//                return employees;
-//            } else {
-//                return new ArrayList<>();
-//            }
-//        } catch (Exception e) {
-//            System.out.println(e);
-//            return new ArrayList<>();
-//        }
-//    }
     public void updateComplianceSurveyInspector() {
-        // tk impl 
+
         System.out.println("impl ...");
     }
 
     public void updateDocumentInspectionInspector() {
-        // tk impl 
+
         System.out.println("impl updateDocumentInspectionInspector");
     }
 
@@ -1005,10 +900,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void setSearchType(String searchType) {
         this.searchType = searchType;
     }
-    
+
     public void doDefaultSearch() {
 
-        switch (getSystemManager().getDashboard().getSelectedTabId()) {           
+        switch (getSystemManager().getDashboard().getSelectedTabId()) {
             case "Standards Compliance":
                 doSurveySearch();
                 break;
@@ -1528,7 +1423,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 } else {
                     return null;
                 }
-            } catch (Exception e) {
+            } catch (JRException e) {
                 System.out.println(e);
                 setLongProcessProgress(100);
 
@@ -1539,6 +1434,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
     }
 
+    // tk
     public StreamedContent getComplianceDailyReportPDFFile() {
 
         EntityManager em = getEntityManager1();
@@ -1581,7 +1477,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 return null;
             }
 
-        } catch (Exception e) {
+        } catch (JRException e) {
             System.out.println(e);
             setLongProcessProgress(100);
 
