@@ -23,6 +23,7 @@ import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.hrm.User;
+import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
 import jm.com.dpbennett.business.entity.sc.CompanyRegistration;
 import jm.com.dpbennett.business.entity.sc.ComplianceDailyReport;
@@ -89,6 +90,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private DatePeriod datePeriod;
     // Managers
     private ClientManager clientManager;
+    private List<String> selectedStandardNames;
+    private Boolean surveysWithProductInspection;
+    private List<String> selectedContainerNumbers;
+    private String componentsToUpdate;
+    private String shippingContainerTableToUpdate;
+    private String complianceSurveyTableToUpdate;
 
     /**
      * Creates a new instance of ComplianceManager.
@@ -101,6 +108,35 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+    
+    public List<String> completeJobNumber(String query) {
+        try {
+            return Job.findJobNumbers(getEntityManager1(), query);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public List<SelectItem> getSurveyLocationTypes() {
+        ArrayList types = new ArrayList();
+
+        types.addAll(getStringListAsSelectItems(getEntityManager1(), "complianceSurveyLocationTypes"));
+
+        return types;
+    }
+    
+    public List<SelectItem> getTypesOfPortOfEntry() {
+        return getStringListAsSelectItems(getEntityManager1(), "portOfEntryTypeList");
+    }
+
+    public List<String> getSelectedStandardNames() {
+        return selectedStandardNames;
+    }
+
+    public void setSelectedStandardNames(List<String> selectedStandardNames) {
+        this.selectedStandardNames = selectedStandardNames;
     }
 
     public void reset() {
@@ -116,6 +152,11 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                         new Date(), "Berth 11", " ");
         datePeriod = new DatePeriod("This month", "month", null, null, null, null, false, false, false);
         datePeriod.initDatePeriod();
+
+        // Components to update
+        shippingContainerTableToUpdate = ":ComplianceSurveyDialogForm:complianceSurveyTabView:containersTable";
+        componentsToUpdate = ":ComplianceSurveyDialogForm";
+        complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
     }
 
     /**
@@ -149,7 +190,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public Boolean getIsConsigneeNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
     }
-    
+
     public void editConsignee() {
 //        getClientManager().setSelectedClient(currentComplianceSurvey.getConsignee());
 //        getClientManager().setIsClientNameAndIdEditable(getUser().getPrivilege().getCanAddClient());
@@ -185,7 +226,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //            return new ArrayList<>();
 //        }
 //    }
-
     public void openComplianceSurvey() {
         PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 700);
     }
@@ -598,7 +638,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //    public void updateJob() {
 //        //setDirty(true);
 //    }
-
     public void updateSurvey() {
         getCurrentComplianceSurvey().setIsDirty(true);
     }
