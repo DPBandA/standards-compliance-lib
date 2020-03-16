@@ -20,8 +20,6 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import jm.com.dpbennett.business.entity.cm.Client;
-import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -33,7 +31,6 @@ import jm.com.dpbennett.business.entity.sc.DocumentInspection;
 import jm.com.dpbennett.business.entity.sc.ProductInspection;
 import jm.com.dpbennett.business.entity.sc.SampleRequest;
 import jm.com.dpbennett.business.entity.sc.ShippingContainer;
-import jm.com.dpbennett.business.entity.sm.Country;
 import jm.com.dpbennett.business.entity.sm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -50,6 +47,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
@@ -96,6 +94,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private String componentsToUpdate;
     private String shippingContainerTableToUpdate;
     private String complianceSurveyTableToUpdate;
+    private Boolean dirty;
 
     /**
      * Creates a new instance of ComplianceManager.
@@ -108,6 +107,19 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+       
+    public void updateSurveyLocationType() {
+        getCurrentComplianceSurvey().setTypeOfEstablishment("");
+        setDirty(true);
+    }
+    
+    public List<SelectItem> getDocumentStamps() {
+        ArrayList stamps = new ArrayList();
+        stamps.add(new SelectItem("", ""));
+        stamps.addAll(getStringListAsSelectItems(getEntityManager1(), "portOfEntryDocumentStampList"));
+
+        return stamps;
     }
     
     public List<String> completeJobNumber(String query) {
@@ -123,6 +135,22 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         ArrayList types = new ArrayList();
 
         types.addAll(getStringListAsSelectItems(getEntityManager1(), "complianceSurveyLocationTypes"));
+
+        return types;
+    }
+    
+     public List getTypesOfEstablishment() {
+        ArrayList types = new ArrayList();
+
+        types.add(new SelectItem(" ", " "));
+        switch (getCurrentComplianceSurvey().getSurveyLocationType()) {
+            case "Site":
+                types.addAll(getStringListAsSelectItems(getEntityManager1(), "siteTypesOfEstablishment"));
+                break;
+            case "Commercial Marketplace":
+                types.addAll(getStringListAsSelectItems(getEntityManager1(), "commercialTypesOfEstablishment"));
+                break;
+        }
 
         return types;
     }
@@ -320,122 +348,123 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         this.currentShippingContainer = currentShippingContainer;
     }
 
-//    public StreamedContent getAuthSigForDetentionRequestPOE() {
-//        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() != null) {
-//            if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage() != null) {
-//                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage()), "image/png");
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    public StreamedContent getInspectorSigForSampleRequestPOE() {
-//        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() != null) {
-//            if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage() != null) {
-//                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage()), "image/png");
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-//    public StreamedContent getPreparedBySigForReleaseRequestPOE() {
-//        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() != null) {
-//            if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage() != null) {
-//                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage()), "image/png");
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-//    public StreamedContent getAuthSigForNoticeOfDentionDM() {
-//        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() != null) {
-//            if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage() != null) {
-//                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage()), "image/png");
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    public StreamedContent getApprovedBySigForReleaseRequestPOE() {
-//        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() != null) {
-//            if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage() != null) {
-//                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage()), "image/png");
-//            } else {
-//                return null;
-//            }
-//        } else {
-//            return null;
-//        }
-//    }
-//    public void updateAuthDetentionRequestPOE() {
-//
-//        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() == null) {
-//            currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
-//            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUser().getEmployee().getSignature());
-//        } else {
-//            currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
-//            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
-//        }
-//
-//    }
-//    public void updateInspectorSigForSampleRequestPOE() {
-//
-//        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() == null) {
-//            currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
-//            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUser().getEmployee().getSignature());
-//        } else {
-//            currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
-//            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
-//        }
-//
-//    }
-//    public void updatePreparedBySigForReleaseRequestPOE() {
-//
-//        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() == null) {
-//            currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
-//            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
-//            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
-//        } else {
-//            currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(null);
-//            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
-//            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(null);
-//        }
-//
-//    }
-//    public void updateAuthSigForNoticeOfDentionDM() {
-//
-//        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() == null) {
-//            currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
-//            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUser().getEmployee().getSignature());
-//        } else {
-//            currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
-//            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
-//        }
-//
-//    }
-//    public void updateApprovedBySigForReleaseRequestPOE() {
-//
-//        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() == null) {
-//            currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
-//            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
-//            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
-//        } else {
-//            currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(null);
-//            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
-//            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(null);
-//        }
-//
-//    }
+    public StreamedContent getAuthSigForDetentionRequestPOE() {
+        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() != null) {
+            if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage() != null) {
+                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getSignatureImage()), "image/png");
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public StreamedContent getInspectorSigForSampleRequestPOE() {
+        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() != null) {
+            if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage() != null) {
+                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getSignatureImage()), "image/png");
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    public StreamedContent getPreparedBySigForReleaseRequestPOE() {
+        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() != null) {
+            if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage() != null) {
+                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage()), "image/png");
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    public StreamedContent getAuthSigForNoticeOfDentionDM() {
+        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() != null) {
+            if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage() != null) {
+                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage()), "image/png");
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public StreamedContent getApprovedBySigForReleaseRequestPOE() {
+        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() != null) {
+            if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage() != null) {
+                return new DefaultStreamedContent(new ByteArrayInputStream(currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getSignatureImage()), "image/png");
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    public void updateAuthDetentionRequestPOE() {
+
+        if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() == null) {
+            currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(new Date());
+            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(getUser().getEmployee().getSignature());
+        } else {
+            currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
+            currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
+        }
+
+    }
+    public void updateInspectorSigForSampleRequestPOE() {
+
+        if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() == null) {
+            currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(new Date());
+            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(getUser().getEmployee().getSignature());
+        } else {
+            currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
+            currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
+        }
+
+    }
+    public void updatePreparedBySigForReleaseRequestPOE() {
+
+        if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() == null) {
+            currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(new Date());
+            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
+        } else {
+            currentComplianceSurvey.setPreparedBySigDateForReleaseRequestPOE(null);
+            currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
+            currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(null);
+        }
+
+    }
+    public void updateAuthSigForNoticeOfDentionDM() {
+
+        if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() == null) {
+            currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(new Date());
+            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(getUser().getEmployee().getSignature());
+        } else {
+            currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
+            currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
+        }
+
+    }
+    public void updateApprovedBySigForReleaseRequestPOE() {
+
+        if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() == null) {
+            currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(new Date());
+            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(getUser().getEmployee().getSignature());
+            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(getUser().getEmployee());
+        } else {
+            currentComplianceSurvey.setApprovedBySigDateForReleaseRequestPOE(null);
+            currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
+            currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(null);
+        }
+
+    }
+    
     public ComplianceDailyReport getCurrentComplianceDailyReport() {
         return currentComplianceDailyReport;
     }
@@ -762,8 +791,72 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         //setDirty(false);
     }
 
-    public void saveComplianceSurvey(ActionEvent actionEvent) {
-        currentComplianceSurvey.save(getEntityManager1());
+//    public void saveComplianceSurvey(ActionEvent actionEvent) {
+//        currentComplianceSurvey.save(getEntityManager1());
+//    }
+    
+    public void saveComplianceSurvey() {
+        saveComplianceSurvey(true);
+    }
+
+    private void saveComplianceSurvey(Boolean displayAlert) {
+        EntityManager em = getEntityManager1();
+        RequestContext context = RequestContext.getCurrentInstance();
+
+        try {
+//            // Validate fields tk testing without validation
+//            if (!validateComplianceSurvey(displayAlert)) {
+//                return;
+//            }
+            // Ensure inspector is not null
+//            Employee inspector = getEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
+//            if (inspector != null) {
+//                currentComplianceSurvey.setInspector(inspector);
+//            } else {
+//                currentComplianceSurvey.setInspector(App.getDefaultEmployee(em, "--", "--"));
+//            }
+
+            // Validate fields required for port of entry detention if one was issued
+            // NB: This should be in validation code.
+            if (currentComplianceSurvey.getRequestForDetentionIssuedForPortOfEntry()) {
+//                if (!validatePortOfEntryDetentionData(em)) {
+//                    return;
+//                } else {
+//                }
+            }
+
+            if (dirty) {
+//                Employee employee = Employee.findEmployeeById(em, main.getUser().getEmployee().getId());
+                currentComplianceSurvey.setDateEdited(new Date());
+//                currentComplianceSurvey.setEditedBy(employee);
+
+            }
+            em.getTransaction().begin();
+
+            // now save survey            
+            Long id = BusinessEntityUtils.saveBusinessEntity(em, currentComplianceSurvey);
+            em.getTransaction().commit();
+
+            if (id == null) {
+                context.addCallbackParam("entitySaved", false);
+            } else if (id == 0L) {
+                context.addCallbackParam("entitySaved", false);
+            } else {
+                context.addCallbackParam("entitySaved", true);
+                isNewComplianceSurvey = false;
+                setDirty(false);
+            }
+
+            // Make sure data is fresh from database by reloading it.
+            currentComplianceSurvey = ComplianceSurvey.findComplianceSurveyById(em, currentComplianceSurvey.getId());
+
+            System.out.println("Survey saved!");
+
+        } catch (Exception e) {
+            //closeEntityManager1();
+            context.addCallbackParam("entitySaved", false);
+            System.out.println(e);
+        }
     }
 
     public void saveEntryDocumentInspection() {
@@ -1148,40 +1241,41 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-//        updateComplianceSurvey(em);
-//
-//        // broker
-//        parameters.put("formId", currentComplianceSurvey.getId().longValue());
-//        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
-//                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
-//
-//        // consignee
-//        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
-//
-//        // consignee contact person
-//        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-//
-//        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
-//        parameters.put("products", getComplianceSurveyProductNames());
-//        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
-//        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
-//
-//        // sample disposal
-//        if (currentComplianceSurvey.getSamplesToBeCollected()) {
-//            parameters.put("samplesToBeCollected", "\u2713"); // \u2713 is unicode for tick
-//        } else {
-//            parameters.put("samplesToBeCollected", "");
-//        }
-//        if (currentComplianceSurvey.getSamplesToBeDisposed()) {
-//            parameters.put("samplesToBeDisposed", "\u2713");
-//        } else {
-//            parameters.put("samplesToBeDisposed", "");
-//        }
+        updateComplianceSurvey(em);
+
+        // broker
+        parameters.put("formId", currentComplianceSurvey.getId().longValue());
+        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
+                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
+
+        // consignee
+        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
+
+        // consignee contact person
+        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
+
+        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
+        parameters.put("products", getComplianceSurveyProductNames());
+        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+
+        // sample disposal
+        if (currentComplianceSurvey.getSamplesToBeCollected()) {
+            parameters.put("samplesToBeCollected", "\u2713"); // \u2713 is unicode for tick
+        } else {
+            parameters.put("samplesToBeCollected", "");
+        }
+        if (currentComplianceSurvey.getSamplesToBeDisposed()) {
+            parameters.put("samplesToBeDisposed", "\u2713");
+        } else {
+            parameters.put("samplesToBeDisposed", "");
+        }
+        
         return getComplianceSurveyFormPDFFile(
                 em,
                 "portOfEntryDetentionSampleRequestForm",
@@ -1193,72 +1287,72 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public StreamedContent getNoticeOfReleaseFromDetentionFile() {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
-//
-//        updateComplianceSurvey(em);
-//
-//        // full release
-//        if (currentComplianceSurvey.getFullRelease()) {
-//            parameters.put("fullRelease", "\u2713");
-//        } else {
-//            parameters.put("fullRelease", "");
-//        }
-//
-//        // retailer, distributor, other?
-//        if (currentComplianceSurvey.getRetailer()) {
-//            parameters.put("retailer", "\u2713");
-//        } else {
-//            parameters.put("retailer", "");
-//        }
-//        if (currentComplianceSurvey.getDistributor()) {
-//            parameters.put("distributor", "\u2713");
-//        } else {
-//            parameters.put("distributor", "");
-//        }
-//        if (currentComplianceSurvey.getOtherCompanyTypes()) {
-//            parameters.put("otherCompanyTypes", "\u2713");
-//            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
-//        } else {
-//            parameters.put("otherCompanyTypes", "");
-//            currentComplianceSurvey.setCompanyTypes("");
-//            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
-//        }
-//
-//        // broker
-//        parameters.put("formId", currentComplianceSurvey.getId().longValue());
-//        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
-//                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
-//
-//        // consignee
-//        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
-//
-//        // provisional release location 
-//        parameters.put("specifiedReleaseLocationDomesticMarket", currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getCity() + ", "
-//                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getStateOrProvince());
-//
-//        // location of detained products locationOfDetainedProduct 
-//        parameters.put("locationOfDetainedProduct", currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getCity() + ", "
-//                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getStateOrProvince());
-//
-//        // consignee contact person
-//        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-//
-//        // consignee tel/fax/email
-//        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
-//
-//        parameters.put("products", getComplianceSurveyProductNames());
-//        parameters.put("productBrandNames", getComplianceSurveyProductBrandNames());
-//        parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
-//        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
-//        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+
+        updateComplianceSurvey(em);
+
+        // full release
+        if (currentComplianceSurvey.getFullRelease()) {
+            parameters.put("fullRelease", "\u2713");
+        } else {
+            parameters.put("fullRelease", "");
+        }
+
+        // retailer, distributor, other?
+        if (currentComplianceSurvey.getRetailer()) {
+            parameters.put("retailer", "\u2713");
+        } else {
+            parameters.put("retailer", "");
+        }
+        if (currentComplianceSurvey.getDistributor()) {
+            parameters.put("distributor", "\u2713");
+        } else {
+            parameters.put("distributor", "");
+        }
+        if (currentComplianceSurvey.getOtherCompanyTypes()) {
+            parameters.put("otherCompanyTypes", "\u2713");
+            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
+        } else {
+            parameters.put("otherCompanyTypes", "");
+            currentComplianceSurvey.setCompanyTypes("");
+            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
+        }
+
+        // broker
+        parameters.put("formId", currentComplianceSurvey.getId().longValue());
+        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
+                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
+
+        // consignee
+        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
+
+        // provisional release location 
+        parameters.put("specifiedReleaseLocationDomesticMarket", currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine1() + ", "
+                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine2() + ", "
+                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getCity() + ", "
+                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getStateOrProvince());
+
+        // location of detained products locationOfDetainedProduct 
+        parameters.put("locationOfDetainedProduct", currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine1() + ", "
+                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine2() + ", "
+                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getCity() + ", "
+                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getStateOrProvince());
+
+        // consignee contact person
+        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
+
+        // consignee tel/fax/email
+        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
+
+        parameters.put("products", getComplianceSurveyProductNames());
+        parameters.put("productBrandNames", getComplianceSurveyProductBrandNames());
+        parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
+        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
 
         return getComplianceSurveyFormPDFFile(
                 em,
@@ -1268,106 +1362,106 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 "DOMESTIC_MARKET_DETENTION");
     }
 
-//    public String getComplianceSurveyProductNames() {
-//        String names = "";
-//
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
-//            if (names.equals("")) {
-//                names = product.getName();
-//            } else {
-//                names = names + ", " + product.getName();
-//            }
-//        }
-//
-//        return names;
-//    }
-//    public Boolean samplesTaken() {
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
-//            if (product.getSampledForLabelAssessment() || product.getSampledForTesting()) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
-//    }
-//    public String getComplianceSurveyProductBrandNames() {
-//        String brandNames = "";
-//
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
-//            if (brandNames.equals("")) {
-//                brandNames = product.getBrand();
-//            } else {
-//                brandNames = brandNames + ", " + product.getBrand();
-//            }
-//        }
-//
-//        return brandNames;
-//    }
-//    public String getComplianceSurveyProductBatchCodes() {
-//        String batchCodes = "";
-//
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
-//            if (batchCodes.equals("")) {
-//                batchCodes = product.getBatchCode();
-//            } else {
-//                batchCodes = batchCodes + ", " + product.getBatchCode();
-//            }
-//        }
-//
-//        return batchCodes;
-//    }
-//    public String getComplianceSurveyProductTotalQuantity() {
-//        Integer totalQuantity = 0;
-//
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+    public String getComplianceSurveyProductNames() {
+        String names = "";
+
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+            if (names.equals("")) {
+                names = product.getName();
+            } else {
+                names = names + ", " + product.getName();
+            }
+        }
+
+        return names;
+    }
+    public Boolean samplesTaken() {
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+            if (product.getSampledForLabelAssessment() || product.getSampledForTesting()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    public String getComplianceSurveyProductBrandNames() {
+        String brandNames = "";
+
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+            if (brandNames.equals("")) {
+                brandNames = product.getBrand();
+            } else {
+                brandNames = brandNames + ", " + product.getBrand();
+            }
+        }
+
+        return brandNames;
+    }
+    public String getComplianceSurveyProductBatchCodes() {
+        String batchCodes = "";
+
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+            if (batchCodes.equals("")) {
+                batchCodes = product.getBatchCode();
+            } else {
+                batchCodes = batchCodes + ", " + product.getBatchCode();
+            }
+        }
+
+        return batchCodes;
+    }
+    public String getComplianceSurveyProductTotalQuantity() {
+        Integer totalQuantity = 0;
+
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+            if (product.getQuantity() != null) {
+                totalQuantity = totalQuantity + product.getQuantity();
+            }
+        }
+
+        return totalQuantity.toString();
+    }
+    public String getComplianceSurveySampledProductNamesQuantitiesAndUnits() {
+        String namesQuantitiesAndUnits = "";
+
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
+            if (product.getSampledForTesting() || product.getSampledForLabelAssessment()) {
+                if (namesQuantitiesAndUnits.equals("")) {
+                    namesQuantitiesAndUnits = namesQuantitiesAndUnits + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit() + " of " + product.getName();
+                } else {
+                    namesQuantitiesAndUnits = namesQuantitiesAndUnits + ", " + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit() + " of " + product.getName();
+                }
+            }
+        }
+
+        return namesQuantitiesAndUnits;
+    }
+    public String getComplianceSurveyProductQuantitiesAndUnits() {
+        String quantitiesAndUnits = "";
+
+        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
 //            if (product.getQuantity() != null) {
-//                totalQuantity = totalQuantity + product.getQuantity();
+            if (quantitiesAndUnits.equals("")) {
+                quantitiesAndUnits = quantitiesAndUnits + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit();
+            } else {
+                quantitiesAndUnits = quantitiesAndUnits + ", " + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit();
+            }
 //            }
-//        }
-//
-//        return totalQuantity.toString();
-//    }
-//    public String getComplianceSurveySampledProductNamesQuantitiesAndUnits() {
-//        String namesQuantitiesAndUnits = "";
-//
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
-//            if (product.getSampledForTesting() || product.getSampledForLabelAssessment()) {
-//                if (namesQuantitiesAndUnits.equals("")) {
-//                    namesQuantitiesAndUnits = namesQuantitiesAndUnits + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit() + " of " + product.getName();
-//                } else {
-//                    namesQuantitiesAndUnits = namesQuantitiesAndUnits + ", " + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit() + " of " + product.getName();
-//                }
-//            }
-//        }
-//
-//        return namesQuantitiesAndUnits;
-//    }
-//    public String getComplianceSurveyProductQuantitiesAndUnits() {
-//        String quantitiesAndUnits = "";
-//
-//        for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
-////            if (product.getQuantity() != null) {
-//            if (quantitiesAndUnits.equals("")) {
-//                quantitiesAndUnits = quantitiesAndUnits + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit();
-//            } else {
-//                quantitiesAndUnits = quantitiesAndUnits + ", " + product.getContainerSize() + " " + product.getQuantity() + " " + product.getQuantityUnit();
-//            }
-////            }
-//        }
-//
-//        return quantitiesAndUnits;
-//    }
-//    public String getComplianceSurveyProductTotalSampleSize() {
-//        Integer totalSampleSize = 0;
-//
-//        for (ProductInspection productInspection : currentComplianceSurvey.getProductInspections()) {
-//            if (productInspection.getNumProductsSampled() != null) {
-//                totalSampleSize = totalSampleSize + productInspection.getNumProductsSampled();
-//            }
-//        }
-//
-//        return totalSampleSize.toString();
-//    }
+        }
+
+        return quantitiesAndUnits;
+    }
+    public String getComplianceSurveyProductTotalSampleSize() {
+        Integer totalSampleSize = 0;
+
+        for (ProductInspection productInspection : currentComplianceSurvey.getProductInspections()) {
+            if (productInspection.getNumProductsSampled() != null) {
+                totalSampleSize = totalSampleSize + productInspection.getNumProductsSampled();
+            }
+        }
+
+        return totalSampleSize.toString();
+    }
     // tk use of this may have to be retired.
     public void updateComplianceSurvey(EntityManager em) {
 //        if (dirty) {
@@ -1577,8 +1671,16 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 "DOMESTIC_MARKET_DETENTION");
     }
 
-    public Boolean isDirty() { // tk delete
-        return false; //dirty;
+//    public Boolean isDirty() { // tk delete
+//        return false; //dirty;
+//    }
+    
+    public void setDirty(Boolean dirty) {
+        this.dirty = dirty;
+    }
+
+    public void updateJob() {
+        setDirty(true);
     }
 
     public User getUser() {
