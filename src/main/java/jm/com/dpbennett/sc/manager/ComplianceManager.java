@@ -20,6 +20,8 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import jm.com.dpbennett.business.entity.dm.DocumentStandard;
+import jm.com.dpbennett.business.entity.fm.Category;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -89,7 +91,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     // Managers
     private ClientManager clientManager;
     private List<String> selectedStandardNames;
-    private Boolean surveysWithProductInspection;
+    //private Boolean surveysWithProductInspection;
     private List<String> selectedContainerNumbers;
     private String componentsToUpdate;
     private String shippingContainerTableToUpdate;
@@ -108,12 +110,83 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-       
+    
+    public List<String> getAllDocumentStandardNames() {
+        EntityManager em = getEntityManager1();
+
+        List<String> names = new ArrayList<>();
+
+        List<DocumentStandard> standards = DocumentStandard.findAllDocumentStandards(em);
+        for (DocumentStandard documentStandard : standards) {
+            names.add(documentStandard.getName());
+        }
+
+        return names;
+    }
+    
+    public String getComplianceSurveyTableToUpdate() {
+        return complianceSurveyTableToUpdate;
+    }
+
+    public void setComplianceSurveyTableToUpdate(String complianceSurveyTableToUpdate) {
+        this.complianceSurveyTableToUpdate = complianceSurveyTableToUpdate;
+    }
+    
+    public String getShippingContainerTableToUpdate() {
+        return shippingContainerTableToUpdate;
+    }
+
+    public void setShippingContainerTableToUpdate(String shippingContainerTableToUpdate) {
+        this.shippingContainerTableToUpdate = shippingContainerTableToUpdate;
+    }
+    
+    public String getComponentsToUpdate() {
+        return componentsToUpdate;
+    }
+
+    public void setComponentsToUpdate(String componentsToUpdate) {
+        this.componentsToUpdate = componentsToUpdate;
+    }
+    
+    public List<String> getSelectedContainerNumbers() {
+        return selectedContainerNumbers;
+    }
+
+    public void setSelectedContainerNumbers(List<String> selectedContainerNumbers) {
+        this.selectedContainerNumbers = selectedContainerNumbers;
+    }
+
+    public List<String> getAllShippingContainers() {
+        return getCurrentComplianceSurvey().getEntryDocumentInspection().getContainerNumberList();
+    }
+    
+    public List<SelectItem> getProductCategories() {
+        ArrayList types = new ArrayList();
+
+        types.add(new SelectItem("", ""));
+        List<Category> categories = Category.findCategoriesByType(getEntityManager1(), "Product");
+        for (Category category : categories) {
+            types.add(new SelectItem(category.getName(), category.getName()));
+        }
+
+        return types;
+    }
+
+    public String getTablesToUpdateAfterSearch() {
+
+        return ":mainTabViewForm:mainTabView:complianceSurveysTable,:mainTabViewForm:mainTabView:documentInspectionsTable";
+    }
+
+    public String getProductTablesToUpdate() {
+
+        return ":ComplianceSurveyDialogForm:complianceSurveyTabView:marketProductsTable";
+    }
+
     public void updateSurveyLocationType() {
         getCurrentComplianceSurvey().setTypeOfEstablishment("");
         setDirty(true);
     }
-    
+
     public List<SelectItem> getDocumentStamps() {
         ArrayList stamps = new ArrayList();
         stamps.add(new SelectItem("", ""));
@@ -121,7 +194,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return stamps;
     }
-    
+
     public List<String> completeJobNumber(String query) {
         try {
             return Job.findJobNumbers(getEntityManager1(), query);
@@ -138,8 +211,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return types;
     }
-    
-     public List getTypesOfEstablishment() {
+
+    public List getTypesOfEstablishment() {
         ArrayList types = new ArrayList();
 
         types.add(new SelectItem(" ", " "));
@@ -154,7 +227,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return types;
     }
-    
+
     public List<SelectItem> getTypesOfPortOfEntry() {
         return getStringListAsSelectItems(getEntityManager1(), "portOfEntryTypeList");
     }
@@ -371,6 +444,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return null;
         }
     }
+
     public StreamedContent getPreparedBySigForReleaseRequestPOE() {
         if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() != null) {
             if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getSignatureImage() != null) {
@@ -382,6 +456,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return null;
         }
     }
+
     public StreamedContent getAuthSigForNoticeOfDentionDM() {
         if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() != null) {
             if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getSignatureImage() != null) {
@@ -405,6 +480,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return null;
         }
     }
+
     public void updateAuthDetentionRequestPOE() {
 
         if (currentComplianceSurvey.getAuthSigForDetentionRequestPOE().getId() == null) {
@@ -416,6 +492,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
+
     public void updateInspectorSigForSampleRequestPOE() {
 
         if (currentComplianceSurvey.getInspectorSigForSampleRequestPOE().getId() == null) {
@@ -427,6 +504,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
+
     public void updatePreparedBySigForReleaseRequestPOE() {
 
         if (currentComplianceSurvey.getPreparedBySigForReleaseRequestPOE().getId() == null) {
@@ -440,6 +518,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
+
     public void updateAuthSigForNoticeOfDentionDM() {
 
         if (currentComplianceSurvey.getAuthSigForNoticeOfDentionDM().getId() == null) {
@@ -451,6 +530,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
+
     public void updateApprovedBySigForReleaseRequestPOE() {
 
         if (currentComplianceSurvey.getApprovedBySigForReleaseRequestPOE().getId() == null) {
@@ -464,7 +544,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
 
     }
-    
+
     public ComplianceDailyReport getCurrentComplianceDailyReport() {
         return currentComplianceDailyReport;
     }
@@ -794,7 +874,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //    public void saveComplianceSurvey(ActionEvent actionEvent) {
 //        currentComplianceSurvey.save(getEntityManager1());
 //    }
-    
     public void saveComplianceSurvey() {
         saveComplianceSurvey(true);
     }
@@ -873,8 +952,21 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public void okProductInspection(ActionEvent actionEvent) {
-        // tk impl save
-        System.out.println("impl okProductInspection");
+        try {
+                          if (isNewProductInspection) {
+                    currentComplianceSurvey.getProductInspections().add(currentProductInspection);
+                    isNewProductInspection = false;
+                }
+
+                // Set or update inspector
+                currentProductInspection.setInspector(getUser().getEmployee());
+                currentComplianceSurvey.setInspector(getUser().getEmployee());
+
+                saveComplianceSurvey(false);
+            
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     public void removeProductInspection(ActionEvent event) {
@@ -1275,7 +1367,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         } else {
             parameters.put("samplesToBeDisposed", "");
         }
-        
+
         return getComplianceSurveyFormPDFFile(
                 em,
                 "portOfEntryDetentionSampleRequestForm",
@@ -1375,6 +1467,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return names;
     }
+
     public Boolean samplesTaken() {
         for (ProductInspection product : currentComplianceSurvey.getProductInspections()) {
             if (product.getSampledForLabelAssessment() || product.getSampledForTesting()) {
@@ -1384,6 +1477,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return false;
     }
+
     public String getComplianceSurveyProductBrandNames() {
         String brandNames = "";
 
@@ -1397,6 +1491,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return brandNames;
     }
+
     public String getComplianceSurveyProductBatchCodes() {
         String batchCodes = "";
 
@@ -1410,6 +1505,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return batchCodes;
     }
+
     public String getComplianceSurveyProductTotalQuantity() {
         Integer totalQuantity = 0;
 
@@ -1421,6 +1517,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return totalQuantity.toString();
     }
+
     public String getComplianceSurveySampledProductNamesQuantitiesAndUnits() {
         String namesQuantitiesAndUnits = "";
 
@@ -1436,6 +1533,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return namesQuantitiesAndUnits;
     }
+
     public String getComplianceSurveyProductQuantitiesAndUnits() {
         String quantitiesAndUnits = "";
 
@@ -1451,6 +1549,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return quantitiesAndUnits;
     }
+
     public String getComplianceSurveyProductTotalSampleSize() {
         Integer totalSampleSize = 0;
 
@@ -1462,6 +1561,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return totalSampleSize.toString();
     }
+
     // tk use of this may have to be retired.
     public void updateComplianceSurvey(EntityManager em) {
 //        if (dirty) {
@@ -1674,13 +1774,13 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //    public Boolean isDirty() { // tk delete
 //        return false; //dirty;
 //    }
-    
     public void setDirty(Boolean dirty) {
         this.dirty = dirty;
     }
 
     public void updateJob() {
-        setDirty(true);
+        //setDirty(true);
+        getCurrentComplianceSurvey().setIsDirty(true);
     }
 
     public User getUser() {
