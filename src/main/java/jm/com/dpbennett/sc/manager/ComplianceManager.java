@@ -328,7 +328,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //        }
 //    }
     public void openComplianceSurvey() {
-        PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 700);
+        PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 800);
     }
 
     public void openSurveyBrowser() {
@@ -904,7 +904,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //                }
             }
 
-            if (dirty) {
+            if (getCurrentComplianceSurvey().getIsDirty()) {
 //                Employee employee = Employee.findEmployeeById(em, main.getUser().getEmployee().getId());
                 currentComplianceSurvey.setDateEdited(new Date());
 //                currentComplianceSurvey.setEditedBy(employee);
