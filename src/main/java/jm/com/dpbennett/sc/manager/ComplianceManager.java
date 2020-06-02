@@ -88,15 +88,13 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private DocumentInspection currentDocumentInspection;
     private List<DocumentInspection> documentInspections;
     private DatePeriod datePeriod;
-    // Managers
-    private ClientManager clientManager;
     private List<String> selectedStandardNames;
     //private Boolean surveysWithProductInspection;
     private List<String> selectedContainerNumbers;
     private String componentsToUpdate;
     private String shippingContainerTableToUpdate;
     private String complianceSurveyTableToUpdate;
-    private Boolean dirty;
+    //private Boolean dirty;
 
     /**
      * Creates a new instance of ComplianceManager.
@@ -110,7 +108,29 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
+
+    public void editConsignee() {
+        getClientManager().setSelectedClient(getCurrentComplianceSurvey().getConsignee());
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
     
+    public void createNewConsignee() {
+        getClientManager().createNewClient(true);
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+    
+    public void consigneeDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentComplianceSurvey().setConsignee(getClientManager().getSelectedClient());
+        }
+    }
+
+    public Boolean getIsConsigneeNameValid() {
+        return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
+    }
+
     public List<String> getAllDocumentStandardNames() {
         EntityManager em = getEntityManager1();
 
@@ -123,7 +143,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         return names;
     }
-    
+
     public String getComplianceSurveyTableToUpdate() {
         return complianceSurveyTableToUpdate;
     }
@@ -131,7 +151,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void setComplianceSurveyTableToUpdate(String complianceSurveyTableToUpdate) {
         this.complianceSurveyTableToUpdate = complianceSurveyTableToUpdate;
     }
-    
+
     public String getShippingContainerTableToUpdate() {
         return shippingContainerTableToUpdate;
     }
@@ -139,7 +159,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void setShippingContainerTableToUpdate(String shippingContainerTableToUpdate) {
         this.shippingContainerTableToUpdate = shippingContainerTableToUpdate;
     }
-    
+
     public String getComponentsToUpdate() {
         return componentsToUpdate;
     }
@@ -147,7 +167,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void setComponentsToUpdate(String componentsToUpdate) {
         this.componentsToUpdate = componentsToUpdate;
     }
-    
+
     public List<String> getSelectedContainerNumbers() {
         return selectedContainerNumbers;
     }
@@ -159,7 +179,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public List<String> getAllShippingContainers() {
         return getCurrentComplianceSurvey().getEntryDocumentInspection().getContainerNumberList();
     }
-    
+
     public List<SelectItem> getProductCategories() {
         ArrayList types = new ArrayList();
 
@@ -184,7 +204,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void updateSurveyLocationType() {
         getCurrentComplianceSurvey().setTypeOfEstablishment("");
-        setDirty(true);
+        //setDirty(true);
     }
 
     public List<SelectItem> getDocumentStamps() {
@@ -288,17 +308,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentComplianceSurvey.setIsDirty(true);
     }
 
-    public Boolean getIsConsigneeNameValid() {
-        return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
-    }
-
-    public void editConsignee() {
-//        getClientManager().setSelectedClient(currentComplianceSurvey.getConsignee());
-//        getClientManager().setIsClientNameAndIdEditable(getUser().getPrivilege().getCanAddClient());
-//
-//        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
-    }
-
 //    public void consigneeDialogReturn() {
 //        if (clientManager.getSelectedClient().getId() != null) {
 //            currentComplianceSurvey.setConsignee(clientManager.getSelectedClient());
@@ -349,10 +358,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //    }
 
     public ClientManager getClientManager() {
-        if (clientManager == null) {
-            clientManager = BeanUtils.findBean("clientManager");
-        }
-        return clientManager;
+
+        return BeanUtils.findBean("clientManager");
     }
 
     public void surveyDialogReturn() {
@@ -663,24 +670,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //        return contactsFound;
 //    }
     // Consignee update tk can remove this similar methods like it
-    public void updateComplianceSurveyConsignee() {
-
-        try {
-            EntityManager em = getEntityManager1();
-
-            updateComplianceSurveyConsignee(em);
-
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-    }
-
     public void updateDocumentInspectionConsignee() {
-
-    }
-
-    public void updateComplianceSurveyConsignee(EntityManager em) {
 
     }
 
@@ -923,7 +913,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             } else {
                 context.addCallbackParam("entitySaved", true);
                 isNewComplianceSurvey = false;
-                setDirty(false);
+                //setDirty(false);
             }
 
             // Make sure data is fresh from database by reloading it.
@@ -953,17 +943,17 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void okProductInspection(ActionEvent actionEvent) {
         try {
-                          if (isNewProductInspection) {
-                    currentComplianceSurvey.getProductInspections().add(currentProductInspection);
-                    isNewProductInspection = false;
-                }
+            if (isNewProductInspection) {
+                currentComplianceSurvey.getProductInspections().add(currentProductInspection);
+                isNewProductInspection = false;
+            }
 
-                // Set or update inspector
-                currentProductInspection.setInspector(getUser().getEmployee());
-                currentComplianceSurvey.setInspector(getUser().getEmployee());
+            // Set or update inspector
+            currentProductInspection.setInspector(getUser().getEmployee());
+            currentComplianceSurvey.setInspector(getUser().getEmployee());
 
-                saveComplianceSurvey(false);
-            
+            saveComplianceSurvey(false);
+
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -1774,15 +1764,13 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //    public Boolean isDirty() { // tk delete
 //        return false; //dirty;
 //    }
-    public void setDirty(Boolean dirty) {
-        this.dirty = dirty;
-    }
-
-    public void updateJob() {
-        //setDirty(true);
-        getCurrentComplianceSurvey().setIsDirty(true);
-    }
-
+//    public void setDirty(Boolean dirty) {
+//        this.dirty = dirty;
+//    }
+//    public void updateJob() {
+//        //setDirty(true);
+//        getCurrentComplianceSurvey().setIsDirty(true);
+//    }
     public User getUser() {
         return getSystemManager().getAuthentication().getUser();
     }
