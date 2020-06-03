@@ -123,9 +123,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     
     public void consigneeDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
-            System.out.println("Updating client... " + getClientManager().getSelectedClient().getName()); //tk
             getCurrentComplianceSurvey().setConsignee(getClientManager().getSelectedClient());
-            System.out.println("New survey client... " + getCurrentComplianceSurvey().getConsignee().getName()); //tk
         }
     }
 
