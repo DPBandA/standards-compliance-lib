@@ -22,6 +22,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
 import jm.com.dpbennett.business.entity.fm.Category;
+import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -49,7 +50,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
@@ -108,9 +108,51 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
+    
+    public List<Contact> completeConsigneeRepresentative(String query) {
+        List<Contact> contacts = new ArrayList<>();
+
+        try {
+
+            for (Contact contact : getCurrentComplianceSurvey().getConsignee().getContacts()) {
+                if (contact.toString().toUpperCase().contains(query.toUpperCase())) {
+                    contacts.add(contact);
+                }
+            }
+
+            return contacts;
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+    
+    public List<Contact> completeRetailRepresentative(String query) {
+        List<Contact> contacts = new ArrayList<>();
+
+        try {
+
+            for (Contact contact : getCurrentComplianceSurvey().getRetailOutlet().getContacts()) {
+                if (contact.toString().toUpperCase().contains(query.toUpperCase())) {
+                    contacts.add(contact);
+                }
+            }
+
+            return contacts;
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
 
     public void editConsignee() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getConsignee());
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+    
+    public void editRetailOutlet() {
+        getClientManager().setSelectedClient(getCurrentComplianceSurvey().getRetailOutlet());
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
@@ -121,14 +163,30 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
     
+    public void createNewRetailOutlet() {
+        getClientManager().createNewClient(true);
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+    
     public void consigneeDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setConsignee(getClientManager().getSelectedClient());
         }
     }
+    
+    public void retailOutletDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentComplianceSurvey().setRetailOutlet(getClientManager().getSelectedClient());
+        }
+    }
 
     public Boolean getIsConsigneeNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
+    }
+    
+    public Boolean getIsRetailOutletNameValid() {
+        return BusinessEntityUtils.validateName(currentComplianceSurvey.getRetailOutlet().getName());
     }
 
     public List<String> getAllDocumentStandardNames() {
@@ -303,8 +361,13 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         return Manufacturer.findManufacturersBySearchPattern(getEntityManager1(), query);
     }
 
-    public void updateCconsignee() {
-        //currentComplianceSurvey.setConsigneeRepresentative(new Contact());
+    public void updateConsignee() {
+        currentComplianceSurvey.setConsigneeRepresentative(new Contact());             
+        currentComplianceSurvey.setIsDirty(true);
+    }
+    
+    public void updateRetailOutlet() {
+        currentComplianceSurvey.setRetailRepresentative(new Contact());             
         currentComplianceSurvey.setIsDirty(true);
     }
 
