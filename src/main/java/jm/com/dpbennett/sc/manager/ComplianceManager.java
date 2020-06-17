@@ -255,10 +255,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         return ":mainTabViewForm:mainTabView:complianceSurveysTable,:mainTabViewForm:mainTabView:documentInspectionsTable";
     }
 
-    public String getProductTablesToUpdate() {
-
-        return ":ComplianceSurveyDialogForm:complianceSurveyTabView:marketProductsTable";
-    }
+//    public String getProductTablesToUpdate() {
+//
+//        return ":ComplianceSurveyDialogForm:complianceSurveyTabView:marketProductsTable";
+//    }
 
     public void updateSurveyLocationType() {
         getCurrentComplianceSurvey().setTypeOfEstablishment("");
@@ -401,6 +401,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //    }
     public void openComplianceSurvey() {
         PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 800);
+    }
+    
+    public void openProductInspectionDialog() {
+        PrimeFacesUtils.openDialog(null, "/compliance/productInspectionDialog", true, true, true, true, 650, 800);
     }
 
     public void openSurveyBrowser() {
@@ -871,6 +875,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentProductInspection.setSampleSize(0);
         isNewProductInspection = true;
         //setDirty(true);
+        
+        openProductInspectionDialog(); //tk
     }
 
     public ComplianceSurvey getCurrentComplianceSurvey() {
@@ -1015,7 +1021,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             currentProductInspection.setInspector(getUser().getEmployee());
             currentComplianceSurvey.setInspector(getUser().getEmployee());
 
-            saveComplianceSurvey(false);
+            //saveComplianceSurvey(false);
 
         } catch (Exception e) {
             System.out.println(e);
