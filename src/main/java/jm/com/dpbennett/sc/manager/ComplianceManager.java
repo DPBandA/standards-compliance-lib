@@ -1009,9 +1009,15 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void closeDocumentInspection() {
         promptToSaveIfRequired();
     }
+    
+    public void cancelProductInspection() {
+        PrimeFacesUtils.closeDialog(null);
+    }
 
-    public void okProductInspection(ActionEvent actionEvent) {
+    public void okProductInspection() {
         try {
+            System.out.println("Closing product inspection dialog..."); //tk
+            
             if (isNewProductInspection) {
                 currentComplianceSurvey.getProductInspections().add(currentProductInspection);
                 isNewProductInspection = false;
@@ -1022,6 +1028,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             currentComplianceSurvey.setInspector(getUser().getEmployee());
 
             //saveComplianceSurvey(false);
+            PrimeFacesUtils.closeDialog(null);
 
         } catch (Exception e) {
             System.out.println(e);
