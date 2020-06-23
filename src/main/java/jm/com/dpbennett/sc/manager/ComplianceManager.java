@@ -34,11 +34,12 @@ import jm.com.dpbennett.business.entity.sc.DocumentInspection;
 import jm.com.dpbennett.business.entity.sc.ProductInspection;
 import jm.com.dpbennett.business.entity.sc.SampleRequest;
 import jm.com.dpbennett.business.entity.sc.ShippingContainer;
-import jm.com.dpbennett.business.entity.sm.Manufacturer;
+import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
+import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -144,11 +145,17 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return new ArrayList<>();
         }
     }
-
+    
     public void editConsignee() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getConsignee());
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+
+    public void editManufacturer() {
+        getHumanResourceManager().setSelectedManufacturer(getCurrentProductInspection().getManufacturer());
+
+        PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
     
     public void editRetailOutlet() {
@@ -163,6 +170,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
     
+    public void createNewManufacturer() {
+        getHumanResourceManager().createNewManufacturer(true);
+
+        PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
+    }
+    
     public void createNewRetailOutlet() {
         getClientManager().createNewClient(true);
 
@@ -175,6 +188,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
     }
     
+    public void manufacturerDialogReturn() {
+        if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
+            getCurrentProductInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
+        }
+    }
+    
     public void retailOutletDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setRetailOutlet(getClientManager().getSelectedClient());
@@ -183,6 +202,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public Boolean getIsConsigneeNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
+    }
+    
+    public Boolean getIsManufacturerNameValid() {
+        return BusinessEntityUtils.validateName(currentProductInspection.getManufacturer().getName());
     }
     
     public Boolean getIsRetailOutletNameValid() {
@@ -413,16 +436,11 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //        getJobManager().getMainTabView().select("Survey Browser");
         getSystemManager().getMainTabView().openTab("Standards Compliance");
     }
-//
-//    public JobManagerUser getUser() {
-//        return getJobManager().getUser();
-//    }
-//    public JobManager getJobManager() {
-//        if (jobManager == null) {
-//            jobManager = BeanUtils.findBean("jobManager");
-//        }
-//        return jobManager;
-//    }
+
+    public HumanResourceManager getHumanResourceManager() {
+    
+       return BeanUtils.findBean("humanResourceManager");        
+    }
 
     public ClientManager getClientManager() {
 
@@ -431,7 +449,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void surveyDialogReturn() {
 //        if (currentJob.getIsDirty()) {
-//            PrimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+//            PreditConsigneeimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
 //            PrimeFaces.current().ajax().update("headerForm:growl3");
 //            currentJob.setIsDirty(false);
 //        }
