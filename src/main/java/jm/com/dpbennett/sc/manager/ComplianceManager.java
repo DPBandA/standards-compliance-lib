@@ -158,6 +158,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
     
+    public void editDistributor() {
+        getClientManager().setSelectedClient(getCurrentProductInspection().getDistributor());
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+    
     public void editRetailOutlet() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getRetailOutlet());
 
@@ -206,6 +212,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     
     public Boolean getIsManufacturerNameValid() {
         return BusinessEntityUtils.validateName(currentProductInspection.getManufacturer().getName());
+    }
+    
+    public Boolean getIsDistributorNameValid() {
+        return BusinessEntityUtils.validateName(currentProductInspection.getDistributor().getName());
     }
     
     public Boolean getIsRetailOutletNameValid() {
