@@ -22,6 +22,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
 import jm.com.dpbennett.business.entity.fm.Category;
+import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Contact;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.jmts.Job;
@@ -109,7 +110,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public List<Contact> completeConsigneeRepresentative(String query) {
         List<Contact> contacts = new ArrayList<>();
 
@@ -128,6 +129,43 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         }
     }
     
+    public List<Contact> completeBrokerRepresentative(String query) {
+        List<Contact> contacts = new ArrayList<>();
+
+        try {
+
+            for (Contact contact : getCurrentComplianceSurvey().getBroker().getContacts()) {
+                if (contact.toString().toUpperCase().contains(query.toUpperCase())) {
+                    contacts.add(contact);
+                }
+            }
+
+            return contacts;
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+    
+    public List<Address> completeBrokerAddress(String query) {
+        List<Address> addresses = new ArrayList<>();
+
+        try {
+
+            for (Address address : getCurrentComplianceSurvey().getBroker().getAddresses()) {
+                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
+                    addresses.add(address);
+                }
+            }
+
+            return addresses;
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
     public List<Contact> completeRetailRepresentative(String query) {
         List<Contact> contacts = new ArrayList<>();
 
@@ -145,9 +183,17 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return new ArrayList<>();
         }
     }
-    
+
     public void editConsignee() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getConsignee());
+        getClientManager().setClientDialogTitle("Consignee Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+    
+    public void editBroker() {
+        getClientManager().setSelectedClient(getCurrentComplianceSurvey().getBroker());
+        getClientManager().setClientDialogTitle("Broker Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
@@ -157,49 +203,79 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
-    
+
     public void editDistributor() {
         getClientManager().setSelectedClient(getCurrentProductInspection().getDistributor());
+        getClientManager().setClientDialogTitle("Distributor Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
+
     public void editRetailOutlet() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getRetailOutlet());
+        getClientManager().setClientDialogTitle("Retail Outlet Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
+
     public void createNewConsignee() {
         getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Consignee Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
     
+    public void createNewBroker() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Broker Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+
+    public void createNewDistributor() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Distributor Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+
     public void createNewManufacturer() {
         getHumanResourceManager().createNewManufacturer(true);
 
         PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
-    
+
     public void createNewRetailOutlet() {
         getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Retail Outlet Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
+
     public void consigneeDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setConsignee(getClientManager().getSelectedClient());
         }
     }
     
+    public void brokerDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentComplianceSurvey().setBroker(getClientManager().getSelectedClient());
+        }
+    }
+
+    public void distributorDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentProductInspection().setDistributor(getClientManager().getSelectedClient());
+        }
+    }
+
     public void manufacturerDialogReturn() {
         if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
             getCurrentProductInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
         }
     }
-    
+
     public void retailOutletDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setRetailOutlet(getClientManager().getSelectedClient());
@@ -210,14 +286,18 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
     }
     
+     public Boolean getIsBrokerNameValid() {
+        return BusinessEntityUtils.validateName(currentComplianceSurvey.getBroker().getName());
+    }
+
     public Boolean getIsManufacturerNameValid() {
         return BusinessEntityUtils.validateName(currentProductInspection.getManufacturer().getName());
     }
-    
+
     public Boolean getIsDistributorNameValid() {
         return BusinessEntityUtils.validateName(currentProductInspection.getDistributor().getName());
     }
-    
+
     public Boolean getIsRetailOutletNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getRetailOutlet().getName());
     }
@@ -292,7 +372,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //
 //        return ":ComplianceSurveyDialogForm:complianceSurveyTabView:marketProductsTable";
 //    }
-
     public void updateSurveyLocationType() {
         getCurrentComplianceSurvey().setTypeOfEstablishment("");
         //setDirty(true);
@@ -307,8 +386,18 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public List<String> completeJobNumber(String query) {
+        List<String> jobNumbers = new ArrayList<>();
+        
         try {
-            return Job.findJobNumbers(getEntityManager1(), query);
+            
+            List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query);
+            
+            for (Job job : foundJobs) {
+                jobNumbers.add(job.getJobNumber());
+            }
+            
+            return jobNumbers;
+            
         } catch (Exception e) {
             System.out.println(e);
             return new ArrayList<>();
@@ -395,12 +484,18 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public void updateConsignee() {
-        currentComplianceSurvey.setConsigneeRepresentative(new Contact());             
+        currentComplianceSurvey.setConsigneeRepresentative(new Contact());
         currentComplianceSurvey.setIsDirty(true);
     }
     
+    public void updateBroker() {
+        currentComplianceSurvey.setBrokerRepresentative(new Contact());
+        currentComplianceSurvey.setBrokerAddress(new Address());
+        currentComplianceSurvey.setIsDirty(true);
+    }
+
     public void updateRetailOutlet() {
-        currentComplianceSurvey.setRetailRepresentative(new Contact());             
+        currentComplianceSurvey.setRetailRepresentative(new Contact());
         currentComplianceSurvey.setIsDirty(true);
     }
 
@@ -435,7 +530,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void openComplianceSurvey() {
         PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 800);
     }
-    
+
     public void openProductInspectionDialog() {
         PrimeFacesUtils.openDialog(null, "/compliance/productInspectionDialog", true, true, true, true, 650, 800);
     }
@@ -448,8 +543,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public HumanResourceManager getHumanResourceManager() {
-    
-       return BeanUtils.findBean("humanResourceManager");        
+
+        return BeanUtils.findBean("humanResourceManager");
     }
 
     public ClientManager getClientManager() {
@@ -878,6 +973,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void updateDateOfDetention() {
         getCurrentComplianceSurvey().setDateOfDetention(new Date());
+        
+        updateSurvey();
     }
 
     public void updateDailyReportStartDate() {
@@ -903,7 +1000,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentProductInspection.setSampleSize(0);
         isNewProductInspection = true;
         //setDirty(true);
-        
+
         openProductInspectionDialog(); //tk
     }
 
@@ -1037,7 +1134,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void closeDocumentInspection() {
         promptToSaveIfRequired();
     }
-    
+
     public void cancelProductInspection() {
         PrimeFacesUtils.closeDialog(null);
     }
@@ -1045,7 +1142,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void okProductInspection() {
         try {
             System.out.println("Closing product inspection dialog..."); //tk
-            
+
             if (isNewProductInspection) {
                 currentComplianceSurvey.getProductInspections().add(currentProductInspection);
                 isNewProductInspection = false;
