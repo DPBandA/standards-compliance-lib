@@ -51,6 +51,7 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -69,13 +70,16 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private ProductInspection currentProductInspection;
     private SampleRequest currentSampleRequest;
     private CompanyRegistration currentCompanyRegistration;
+    private DocumentStandard currentDocumentStandard;
     private Boolean isNewProductInspection = false;
     private Boolean isNewComplianceSurvey = false;
     private Boolean isNewDocumentInspection = false;
     private List<ComplianceSurvey> complianceSurveys;
+    private List<DocumentStandard> documentStandards;
     private Date reportStartDate;
     private Date reportEndDate;
     private String searchText;
+    private String standardSearchText;
     private String reportSearchText;
     private String dateSearchField;
     private String dateSearchPeriod;
@@ -96,7 +100,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private String componentsToUpdate;
     private String shippingContainerTableToUpdate;
     private String complianceSurveyTableToUpdate;
-    //private Boolean dirty;
+    private Boolean isActiveDocumentStandardsOnly;
 
     /**
      * Creates a new instance of ComplianceManager.
@@ -128,7 +132,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return new ArrayList<>();
         }
     }
-    
+
     public List<Contact> completeBrokerRepresentative(String query) {
         List<Contact> contacts = new ArrayList<>();
 
@@ -146,7 +150,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             return new ArrayList<>();
         }
     }
-    
+
     public List<Address> completeBrokerAddress(String query) {
         List<Address> addresses = new ArrayList<>();
 
@@ -190,7 +194,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
+
     public void editBroker() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getBroker());
         getClientManager().setClientDialogTitle("Broker Detail");
@@ -224,7 +228,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
+
     public void createNewBroker() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Broker Detail");
@@ -257,7 +261,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             getCurrentComplianceSurvey().setConsignee(getClientManager().getSelectedClient());
         }
     }
-    
+
     public void brokerDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setBroker(getClientManager().getSelectedClient());
@@ -285,8 +289,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public Boolean getIsConsigneeNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
     }
-    
-     public Boolean getIsBrokerNameValid() {
+
+    public Boolean getIsBrokerNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getBroker().getName());
     }
 
@@ -387,17 +391,17 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public List<String> completeJobNumber(String query) {
         List<String> jobNumbers = new ArrayList<>();
-        
+
         try {
-            
+
             List<Job> foundJobs = Job.findAllByJobNumber(getEntityManager1(), query);
-            
+
             for (Job job : foundJobs) {
                 jobNumbers.add(job.getJobNumber());
             }
-            
+
             return jobNumbers;
-            
+
         } catch (Exception e) {
             System.out.println(e);
             return new ArrayList<>();
@@ -443,8 +447,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void reset() {
         complianceSurveys = new ArrayList<>();
         documentInspections = new ArrayList<>();
+        documentStandards = new ArrayList<>();
         dateSearchField = "dateFirstReceived";
         searchText = "";
+        standardSearchText = "";
         searchType = "General";
         dateSearchPeriod = "This month";
         reportPeriod = "This month";
@@ -458,6 +464,15 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         shippingContainerTableToUpdate = ":ComplianceSurveyDialogForm:complianceSurveyTabView:containersTable";
         componentsToUpdate = ":ComplianceSurveyDialogForm";
         complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
+        isActiveDocumentStandardsOnly = true;
+    }
+
+    public Boolean getIsActiveDocumentStandardsOnly() {
+        return isActiveDocumentStandardsOnly;
+    }
+
+    public void setIsActiveDocumentStandardsOnly(Boolean isActiveDocumentStandardsOnly) {
+        this.isActiveDocumentStandardsOnly = isActiveDocumentStandardsOnly;
     }
 
     /**
@@ -487,7 +502,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentComplianceSurvey.setConsigneeRepresentative(new Contact());
         currentComplianceSurvey.setIsDirty(true);
     }
-    
+
     public void updateBroker() {
         currentComplianceSurvey.setBrokerRepresentative(new Contact());
         currentComplianceSurvey.setBrokerAddress(new Address());
@@ -533,6 +548,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void openProductInspectionDialog() {
         PrimeFacesUtils.openDialog(null, "/compliance/productInspectionDialog", true, true, true, true, 650, 800);
+    }
+
+    public void openDocumentStandardDialog() {
+        PrimeFacesUtils.openDialog(null, "/compliance/documentStandardDialog", true, true, true, true, 650, 800);
     }
 
     public void openSurveyBrowser() {
@@ -973,7 +992,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void updateDateOfDetention() {
         getCurrentComplianceSurvey().setDateOfDetention(new Date());
-        
+
         updateSurvey();
     }
 
@@ -1005,9 +1024,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public ComplianceSurvey getCurrentComplianceSurvey() {
-        //if (currentComplianceSurvey == null) {
-        //    createNewComplianceSurvey();
-        //}
+
         return currentComplianceSurvey;
     }
 
@@ -1294,6 +1311,14 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void setSearchText(String searchText) {
         this.searchText = searchText;
+    }
+
+    public String getStandardSearchText() {
+        return standardSearchText;
+    }
+
+    public void setStandardSearchText(String standardSearchText) {
+        this.standardSearchText = standardSearchText;
     }
 
     public String getSearchType() {
@@ -1978,17 +2003,18 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     private void initMainTabView() {
 
-        if (getUser().getModules().getJobManagementAndTrackingModule()) {
-            getSystemManager().getMainTabView().openTab("Standards Compliance");
-        }
+        //if (getUser().getModules().getJobManagementAndTrackingModule()) {
+        getSystemManager().getMainTabView().openTab("Standards Compliance");
+        getSystemManager().getMainTabView().openTab("Standards");
 
+        //}
     }
 
     private void initDashboard() {
 
-        if (getUser().getModules().getJobManagementAndTrackingModule()) {
-            getSystemManager().getDashboard().openTab("Standards Compliance");
-        }
+        //if (getUser().getModules().getJobManagementAndTrackingModule()) {
+        getSystemManager().getDashboard().openTab("Standards Compliance");
+        //}
     }
 
     @Override
@@ -2001,4 +2027,57 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void completeLogout() {
         reset();
     }
+
+    public List<DocumentStandard> completeActiveDocumentStandard(String query) {
+        try {
+            return DocumentStandard.findActiveDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), query);
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+
+    public DocumentStandard getCurrentDocumentStandard() {
+        return currentDocumentStandard;
+    }
+
+    public void setCurrentDocumentStandard(DocumentStandard currentDocumentStandard) {
+        this.currentDocumentStandard = currentDocumentStandard;
+    }
+
+    public void createNewDocumentStandard() {
+        currentDocumentStandard = new DocumentStandard();
+    }
+
+    public List<DocumentStandard> getDocumentStandards() {
+        return documentStandards;
+    }
+
+    public void doDocumentStandardSearch() {
+        if (standardSearchText.trim().length() > 1) {
+            if (getIsActiveDocumentStandardsOnly()) {
+                documentStandards = DocumentStandard.findActiveDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
+            } else {
+                documentStandards = DocumentStandard.findDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
+            }
+        } else {
+            documentStandards = new ArrayList<>();
+        }
+    }
+
+    public void onDocumentStandardCellEdit(CellEditEvent event) {
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
+                getDocumentStandards().get(event.getRowIndex()));
+    }
+
+    public int getNumDocumentStandards() {
+        return getDocumentStandards().size();
+    }
+
+    public void editCurrentDocumentStandard() {
+        openDocumentStandardDialog();
+    }
+
 }
