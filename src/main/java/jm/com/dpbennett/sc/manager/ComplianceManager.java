@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
@@ -41,6 +42,8 @@ import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
+import jm.com.dpbennett.hrm.validator.AddressValidator;
+import jm.com.dpbennett.hrm.validator.ContactValidator;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -50,6 +53,7 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import org.primefaces.PrimeFaces;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
@@ -2049,6 +2053,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void createNewDocumentStandard() {
         currentDocumentStandard = new DocumentStandard();
+        
+        openDocumentStandardDialog();
     }
 
     public List<DocumentStandard> getDocumentStandards() {
@@ -2078,6 +2084,48 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void editCurrentDocumentStandard() {
         openDocumentStandardDialog();
+    }
+    
+    public Boolean getIsNewDocumentStandard() {
+        return getCurrentDocumentStandard().getId() ==  null;
+    }
+    
+    public void okDocumentStandard() {
+        
+        try {
+
+            // Update tracking
+            if (getIsNewDocumentStandard()) {
+                getCurrentDocumentStandard().setDateEntered(new Date());
+                getCurrentDocumentStandard().setDateEdited(new Date());
+                
+                if (getUser() != null) {
+                    //getCurrentDocumentStandard().setEnteredBy(getUser().getEmployee());
+                    getCurrentDocumentStandard().setEditedBy(getUser().getEmployee());
+                }
+            }
+
+            // Do save
+            if (getCurrentDocumentStandard().getIsDirty()) {
+                getCurrentDocumentStandard().setDateEdited(new Date());
+                if (getUser() != null) {
+                    getCurrentDocumentStandard().setEditedBy(getUser().getEmployee());
+                }
+                getCurrentDocumentStandard().save(getEntityManager1());
+                getCurrentDocumentStandard().setIsDirty(false);
+            }
+
+            PrimeFaces.current().dialog().closeDynamic(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+    
+    public void cancelDocumentStandardEdit() {
+        getCurrentDocumentStandard().setIsDirty(false);
+        
+        PrimeFaces.current().dialog().closeDynamic(null);
     }
 
 }
