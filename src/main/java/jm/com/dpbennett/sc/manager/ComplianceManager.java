@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -2126,6 +2127,16 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         getCurrentDocumentStandard().setIsDirty(false);
         
         PrimeFaces.current().dialog().closeDynamic(null);
+    }
+    
+    public void updateDocumentStandard() {
+        getCurrentDocumentStandard().setIsDirty(true);
+    }
+    
+     public void updateDocumentStandardName(AjaxBehaviorEvent event) {
+        getCurrentDocumentStandard().setName(getCurrentDocumentStandard().getName().trim());
+
+        updateDocumentStandard();
     }
 
 }
