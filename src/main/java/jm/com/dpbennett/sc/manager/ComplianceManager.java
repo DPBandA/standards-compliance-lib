@@ -1364,6 +1364,33 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 getDatePeriod().getStartDate(),
                 getDatePeriod().getEndDate(),
                 false);
+        
+        System.out.println("Surveys found: " + complianceSurveys.size());
+        
+//        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(
+//                            getEntityManager1(),
+//                            getUser(),
+//                            dateSearchField,
+//                            "General",
+//                            searchText,
+//                            null,
+//                            null,
+//                            !surveysWithProductInspection);
+//                    if (complianceSurveys.isEmpty()) {
+//                        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(
+//                                getEntityManager1(),
+//                                main.getUser(),
+//                                dateSearchField,
+//                                "General",
+//                                searchText,
+//                                null,
+//                                null,
+//                                surveysWithProductInspection);
+//                    }
+//
+//                } else {
+//                    complianceSurveys = new ArrayList<>();
+//                }
 
         openSurveyBrowser();
     }
