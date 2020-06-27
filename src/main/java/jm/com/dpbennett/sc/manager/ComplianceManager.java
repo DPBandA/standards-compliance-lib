@@ -26,6 +26,7 @@ import jm.com.dpbennett.business.entity.dm.DocumentStandard;
 import jm.com.dpbennett.business.entity.fm.Category;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Contact;
+import jm.com.dpbennett.business.entity.hrm.Employee;
 import jm.com.dpbennett.business.entity.hrm.User;
 import jm.com.dpbennett.business.entity.jmts.Job;
 import jm.com.dpbennett.business.entity.rm.DatePeriod;
@@ -1077,73 +1078,83 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         //setDirty(false);
     }
 
-//    public void saveComplianceSurvey(ActionEvent actionEvent) {
-//        currentComplianceSurvey.save(getEntityManager1());
-//    }
     public void saveComplianceSurvey() {
         saveComplianceSurvey(true);
     }
 
     private void saveComplianceSurvey(Boolean displayAlert) {
         EntityManager em = getEntityManager1();
-        RequestContext context = RequestContext.getCurrentInstance();
 
         try {
-//            // Validate fields tk testing without validation
-//            if (!validateComplianceSurvey(displayAlert)) {
-//                return;
-//            }
+            
             // Ensure inspector is not null
-//            Employee inspector = getEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
-//            if (inspector != null) {
-//                currentComplianceSurvey.setInspector(inspector);
-//            } else {
-//                currentComplianceSurvey.setInspector(App.getDefaultEmployee(em, "--", "--"));
-//            }
+            Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
+            if (inspector != null) {
+                currentComplianceSurvey.setInspector(inspector);
+            } else {
+                currentComplianceSurvey.setInspector(Employee.findDefaultEmployee(em, "--", "--", true));
+            }
 
             // Validate fields required for port of entry detention if one was issued
             // NB: This should be in validation code.
             if (currentComplianceSurvey.getRequestForDetentionIssuedForPortOfEntry()) {
-//                if (!validatePortOfEntryDetentionData(em)) {
-//                    return;
-//                } else {
-//                }
+                if (!validatePortOfEntryDetentionData(em)) {
+                    return;
+                }
             }
 
             if (getCurrentComplianceSurvey().getIsDirty()) {
-//                Employee employee = Employee.findEmployeeById(em, main.getUser().getEmployee().getId());
                 currentComplianceSurvey.setDateEdited(new Date());
-//                currentComplianceSurvey.setEditedBy(employee);
-
+                currentComplianceSurvey.setEditedBy(getUser().getEmployee());
             }
             em.getTransaction().begin();
 
-            // now save survey            
+            // Now save survey            
             Long id = BusinessEntityUtils.saveBusinessEntity(em, currentComplianceSurvey);
             em.getTransaction().commit();
 
-            if (id == null) {
-                context.addCallbackParam("entitySaved", false);
-            } else if (id == 0L) {
-                context.addCallbackParam("entitySaved", false);
+            if ((id == null) || (id == 0L)) {
+                PrimeFacesUtils.addMessage("Save Error!",
+                        "An error occured while saving this survey",
+                        FacesMessage.SEVERITY_ERROR);
             } else {
-                context.addCallbackParam("entitySaved", true);
                 isNewComplianceSurvey = false;
-                //setDirty(false);
+                currentComplianceSurvey.setIsDirty(false);
+                PrimeFacesUtils.addMessage("Survey Saved!",
+                        "This survey was saved",
+                        FacesMessage.SEVERITY_INFO);
             }
 
-            // Make sure data is fresh from database by reloading it.
-            currentComplianceSurvey = ComplianceSurvey.findComplianceSurveyById(em, currentComplianceSurvey.getId());
-
-            System.out.println("Survey saved!");
+            System.out.println("Survey saved!"); //tk
 
         } catch (Exception e) {
-            //closeEntityManager1();
-            context.addCallbackParam("entitySaved", false);
+            // tk display message
             System.out.println(e);
         }
     }
 
+    public Boolean validatePortOfEntryDetentionData(EntityManager em) {
+        if (Job.findJobByJobNumber(em, currentComplianceSurvey.getJobNumber()) == null) {
+            getMain().displayCommonMessageDialog(null, "A valid job number is required if a detention request is issued.", "Job Number Required", "info");
+            return false;
+        }
+        if (currentComplianceSurvey.getBroker().getName().trim().equals("")) {
+            getMain().displayCommonMessageDialog(null, "The broker name is required if a detention request is issued.", "Broker Required", "info");
+            return false;
+        }
+
+        if (currentComplianceSurvey.getDateOfDetention() == null) {
+            getMain().displayCommonMessageDialog(null, "The date of the detention is required if a detention request is issued.", "Date of Detention Required", "info");
+            return false;
+        }
+        if (currentComplianceSurvey.getReasonForDetention().trim().equals("")) {
+            getMain().displayCommonMessageDialog(null, "The reason for the detention is required if a detention request is issued.", "Reason for Detention Required", "info");
+            return false;
+        }
+
+        return true;
+    }
+    
     public void saveEntryDocumentInspection() {
         // tk impl save
         System.out.println("impl save doc inspection");
@@ -2054,7 +2065,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void createNewDocumentStandard() {
         currentDocumentStandard = new DocumentStandard();
-        
+
         openDocumentStandardDialog();
     }
 
@@ -2086,20 +2097,20 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void editCurrentDocumentStandard() {
         openDocumentStandardDialog();
     }
-    
+
     public Boolean getIsNewDocumentStandard() {
-        return getCurrentDocumentStandard().getId() ==  null;
+        return getCurrentDocumentStandard().getId() == null;
     }
-    
+
     public void okDocumentStandard() {
-        
+
         try {
 
             // Update tracking
             if (getIsNewDocumentStandard()) {
                 getCurrentDocumentStandard().setDateEntered(new Date());
                 getCurrentDocumentStandard().setDateEdited(new Date());
-                
+
                 if (getUser() != null) {
                     //getCurrentDocumentStandard().setEnteredBy(getUser().getEmployee());
                     getCurrentDocumentStandard().setEditedBy(getUser().getEmployee());
@@ -2122,18 +2133,18 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             System.out.println(e);
         }
     }
-    
+
     public void cancelDocumentStandardEdit() {
         getCurrentDocumentStandard().setIsDirty(false);
-        
+
         PrimeFaces.current().dialog().closeDynamic(null);
     }
-    
+
     public void updateDocumentStandard() {
         getCurrentDocumentStandard().setIsDirty(true);
     }
-    
-     public void updateDocumentStandardName(AjaxBehaviorEvent event) {
+
+    public void updateDocumentStandardName(AjaxBehaviorEvent event) {
         getCurrentDocumentStandard().setName(getCurrentDocumentStandard().getName().trim());
 
         updateDocumentStandard();
