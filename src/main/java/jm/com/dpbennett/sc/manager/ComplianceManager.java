@@ -42,6 +42,7 @@ import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
+import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.hrm.validator.AddressValidator;
@@ -1079,14 +1080,10 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public void saveComplianceSurvey() {
-        saveComplianceSurvey(true);
-    }
-
-    private void saveComplianceSurvey(Boolean displayAlert) {
         EntityManager em = getEntityManager1();
 
         try {
-            
+
             // Ensure inspector is not null
             Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
             if (inspector != null) {
@@ -1107,16 +1104,19 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 currentComplianceSurvey.setDateEdited(new Date());
                 currentComplianceSurvey.setEditedBy(getUser().getEmployee());
             }
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
 
             // Now save survey            
-            Long id = BusinessEntityUtils.saveBusinessEntity(em, currentComplianceSurvey);
-            em.getTransaction().commit();
+            //Long id = BusinessEntityUtils.saveBusinessEntity(em, currentComplianceSurvey);
+            //em.getTransaction().commit();
+            ReturnMessage message = currentComplianceSurvey.save(em);
 
-            if ((id == null) || (id == 0L)) {
+            if (!message.isSuccess()) {
                 PrimeFacesUtils.addMessage("Save Error!",
                         "An error occured while saving this survey",
                         FacesMessage.SEVERITY_ERROR);
+                
+                return;
             } else {
                 isNewComplianceSurvey = false;
                 currentComplianceSurvey.setIsDirty(false);
@@ -1135,29 +1135,32 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public Boolean validatePortOfEntryDetentionData(EntityManager em) {
         if (Job.findJobByJobNumber(em, currentComplianceSurvey.getJobNumber()) == null) {
-            getMain().displayCommonMessageDialog(null, "A valid job number is required if a detention request is issued.", "Job Number Required", "info");
+            PrimeFacesUtils.addMessage("Job Number Required!",
+                    "A valid job number is required if a detention request is issued.",
+                    FacesMessage.SEVERITY_ERROR);
             return false;
         }
         if (currentComplianceSurvey.getBroker().getName().trim().equals("")) {
-            getMain().displayCommonMessageDialog(null, "The broker name is required if a detention request is issued.", "Broker Required", "info");
+            PrimeFacesUtils.addMessage("Broker Required",
+                    "The broker name is required if a detention request is issued.",
+                    FacesMessage.SEVERITY_ERROR);
             return false;
         }
 
         if (currentComplianceSurvey.getDateOfDetention() == null) {
-            getMain().displayCommonMessageDialog(null, "The date of the detention is required if a detention request is issued.", "Date of Detention Required", "info");
+            PrimeFacesUtils.addMessage("Date of Detention Required",
+                    "The date of the detention is required if a detention request is issued.",
+                    FacesMessage.SEVERITY_ERROR);
             return false;
         }
         if (currentComplianceSurvey.getReasonForDetention().trim().equals("")) {
-            getMain().displayCommonMessageDialog(null, "The reason for the detention is required if a detention request is issued.", "Reason for Detention Required", "info");
+            PrimeFacesUtils.addMessage("Reason for Detention Required",
+                    "The reason for the detention is required if a detention request is issued.",
+                    FacesMessage.SEVERITY_ERROR);
             return false;
         }
 
         return true;
-    }
-    
-    public void saveEntryDocumentInspection() {
-        // tk impl save
-        System.out.println("impl save doc inspection");
     }
 
     public void closeComplianceSurvey() {
@@ -1213,12 +1216,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         System.out.println("impl promptToSaveIfRequired");
     }
 
-    public void save() {
-        // tk impl 
-        System.out.println("impl save()");
-    }
-
-    public List<SelectItem> getProductStatus() {
+   public List<SelectItem> getProductStatus() {
 
         return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
     }
