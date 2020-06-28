@@ -79,7 +79,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
     private Boolean isNewProductInspection = false;
-    private Boolean isNewComplianceSurvey = false;
+    //private Boolean isNewComplianceSurvey = false;
     private Boolean isNewDocumentInspection = false;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
@@ -1042,25 +1042,11 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void createNewComplianceSurvey() {
 
         currentComplianceSurvey = new ComplianceSurvey();
-        currentComplianceSurvey.setSurveyType(" ");
-        // consignee and rep
-//        currentComplianceSurvey.setConsignee(new Client("", false));
-//        currentComplianceSurvey.setConsigneeRepresentative(new Contact(""));
-        // retail outlet and rep
-//        currentComplianceSurvey.setRetailOutlet(new Client("", false));
-//        currentComplianceSurvey.setRetailRepresentative(new Contact(""));
-//        // broker and rep
-//        currentComplianceSurvey.setBroker(new Client("", false));
-//        currentComplianceSurvey.setBrokerRepresentative(new Contact(""));
-//
-//        currentComplianceSurvey.getEntryDocumentInspection().setCountryOfConsignment(" ");
-//        currentComplianceSurvey.setDateOfSurvey(new Date());
-        if (getUser() != null) {
-            currentComplianceSurvey.setInspector(getUser().getEmployee());
-        }
-
-        isNewComplianceSurvey = true;
-
+        currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
+        currentComplianceSurvey.setSurveyType("Commercial Marketplace");        
+        currentComplianceSurvey.setDateOfSurvey(new Date());
+        currentComplianceSurvey.setInspector(getUser().getEmployee());
+        
         editComplianceSurvey();
     }
 
@@ -1114,18 +1100,14 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             if (!message.isSuccess()) {
                 PrimeFacesUtils.addMessage("Save Error!",
                         "An error occured while saving this survey",
-                        FacesMessage.SEVERITY_ERROR);
-                
-                return;
+                        FacesMessage.SEVERITY_ERROR);     
             } else {
-                isNewComplianceSurvey = false;
+                //isNewComplianceSurvey = false;
                 currentComplianceSurvey.setIsDirty(false);
                 PrimeFacesUtils.addMessage("Survey Saved!",
                         "This survey was saved",
                         FacesMessage.SEVERITY_INFO);
             }
-
-            System.out.println("Survey saved!"); //tk
 
         } catch (Exception e) {
             // tk display message
@@ -1364,34 +1346,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 getDatePeriod().getStartDate(),
                 getDatePeriod().getEndDate(),
                 false);
-        
-        System.out.println("Surveys found: " + complianceSurveys.size());
-        
-//        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(
-//                            getEntityManager1(),
-//                            getUser(),
-//                            dateSearchField,
-//                            "General",
-//                            searchText,
-//                            null,
-//                            null,
-//                            !surveysWithProductInspection);
-//                    if (complianceSurveys.isEmpty()) {
-//                        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(
-//                                getEntityManager1(),
-//                                main.getUser(),
-//                                dateSearchField,
-//                                "General",
-//                                searchText,
-//                                null,
-//                                null,
-//                                surveysWithProductInspection);
-//                    }
-//
-//                } else {
-//                    complianceSurveys = new ArrayList<>();
-//                }
-
+    
         openSurveyBrowser();
     }
 
