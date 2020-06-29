@@ -36,7 +36,6 @@ import jm.com.dpbennett.business.entity.sc.ComplianceSurvey;
 import jm.com.dpbennett.business.entity.sc.Distributor;
 import jm.com.dpbennett.business.entity.sc.DocumentInspection;
 import jm.com.dpbennett.business.entity.sc.ProductInspection;
-import jm.com.dpbennett.business.entity.sc.SampleRequest;
 import jm.com.dpbennett.business.entity.sc.ShippingContainer;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
@@ -45,8 +44,6 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
-import jm.com.dpbennett.hrm.validator.AddressValidator;
-import jm.com.dpbennett.hrm.validator.ContactValidator;
 import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -75,12 +72,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private EntityManager entityManager1;
     private ComplianceSurvey currentComplianceSurvey;
     private ProductInspection currentProductInspection;
-    private SampleRequest currentSampleRequest;
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
-    private Boolean isNewProductInspection = false;
-    //private Boolean isNewComplianceSurvey = false;
-    private Boolean isNewDocumentInspection = false;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
     private Date reportStartDate;
@@ -108,6 +101,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private String shippingContainerTableToUpdate;
     private String complianceSurveyTableToUpdate;
     private Boolean isActiveDocumentStandardsOnly;
+    private Boolean edit;
 
     /**
      * Creates a new instance of ComplianceManager.
@@ -120,6 +114,14 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public Boolean getEdit() {
+        return edit;
+    }
+
+    public void setEdit(Boolean edit) {
+        this.edit = edit;
     }
 
     public List<Contact> completeConsigneeRepresentative(String query) {
@@ -383,11 +385,6 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 //
 //        return ":ComplianceSurveyDialogForm:complianceSurveyTabView:marketProductsTable";
 //    }
-    public void updateSurveyLocationType() {
-        getCurrentComplianceSurvey().setTypeOfEstablishment("");
-        //setDirty(true);
-    }
-
     public List<SelectItem> getDocumentStamps() {
         ArrayList stamps = new ArrayList();
         stamps.add(new SelectItem("", ""));
@@ -562,10 +559,13 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public void openSurveyBrowser() {
-        // Add the Job Browser tab is 
-//        getSystemManager().getMainTabView().addTab(getEntityManager1(), "Survey Browser", true);
-//        getJobManager().getMainTabView().select("Survey Browser");
+
         getSystemManager().getMainTabView().openTab("Standards Compliance");
+    }
+
+    public void openStandardsBrowser() {
+
+        getSystemManager().getMainTabView().openTab("Standards");
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -1024,10 +1024,11 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentProductInspection = new ProductInspection();
         currentProductInspection.setQuantity(0);
         currentProductInspection.setSampleSize(0);
-        isNewProductInspection = true;
-        //setDirty(true);
+        
+        setEdit(false);
+        
 
-        openProductInspectionDialog(); //tk
+        openProductInspectionDialog();
     }
 
     public ComplianceSurvey getCurrentComplianceSurvey() {
@@ -1043,11 +1044,13 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
         currentComplianceSurvey = new ComplianceSurvey();
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
-        currentComplianceSurvey.setSurveyType("Commercial Marketplace");        
+        currentComplianceSurvey.setSurveyType("Commercial Marketplace");
         currentComplianceSurvey.setDateOfSurvey(new Date());
         currentComplianceSurvey.setInspector(getUser().getEmployee());
-        
+
         editComplianceSurvey();
+
+        openSurveyBrowser();
     }
 
     public void createNewDocumentInspection() {
@@ -1100,7 +1103,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
             if (!message.isSuccess()) {
                 PrimeFacesUtils.addMessage("Save Error!",
                         "An error occured while saving this survey",
-                        FacesMessage.SEVERITY_ERROR);     
+                        FacesMessage.SEVERITY_ERROR);
             } else {
                 //isNewComplianceSurvey = false;
                 currentComplianceSurvey.setIsDirty(false);
@@ -1156,21 +1159,21 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void cancelProductInspection() {
         PrimeFacesUtils.closeDialog(null);
     }
+    
+    public Boolean getIsNewProductInspection() {
+        return getCurrentProductInspection().getId() == null && !getEdit();
+    }
 
     public void okProductInspection() {
         try {
-            System.out.println("Closing product inspection dialog..."); //tk
-
-            if (isNewProductInspection) {
+           
+            if (getIsNewProductInspection()) {
                 currentComplianceSurvey.getProductInspections().add(currentProductInspection);
-                isNewProductInspection = false;
             }
 
-            // Set or update inspector
             currentProductInspection.setInspector(getUser().getEmployee());
             currentComplianceSurvey.setInspector(getUser().getEmployee());
 
-            //saveComplianceSurvey(false);
             PrimeFacesUtils.closeDialog(null);
 
         } catch (Exception e) {
@@ -1198,7 +1201,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         System.out.println("impl promptToSaveIfRequired");
     }
 
-   public List<SelectItem> getProductStatus() {
+    public List<SelectItem> getProductStatus() {
 
         return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
     }
@@ -1347,7 +1350,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 getDatePeriod().getStartDate(),
                 getDatePeriod().getEndDate(),
                 false);
-    
+
         openSurveyBrowser();
     }
 
@@ -1984,27 +1987,14 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 "DOMESTIC_MARKET_DETENTION");
     }
 
-//    public Boolean isDirty() { // tk delete
-//        return false; //dirty;
-//    }
-//    public void setDirty(Boolean dirty) {
-//        this.dirty = dirty;
-//    }
-//    public void updateJob() {
-//        //setDirty(true);
-//        getCurrentComplianceSurvey().setIsDirty(true);
-//    }
     public User getUser() {
         return getSystemManager().getAuthentication().getUser();
     }
 
     private void initMainTabView() {
 
-        //if (getUser().getModules().getJobManagementAndTrackingModule()) {
         getSystemManager().getMainTabView().openTab("Standards Compliance");
-        getSystemManager().getMainTabView().openTab("Standards");
-
-        //}
+        
     }
 
     private void initDashboard() {
@@ -2048,9 +2038,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentDocumentStandard = new DocumentStandard();
 
         openDocumentStandardDialog();
+
+        openStandardsBrowser();
     }
 
     public List<DocumentStandard> getDocumentStandards() {
+        
         return documentStandards;
     }
 
@@ -2077,6 +2070,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     public void editCurrentDocumentStandard() {
         openDocumentStandardDialog();
+    }
+    
+    public void editCurrentProductInspection() {
+       openProductInspectionDialog();
+       
+       setEdit(true);
     }
 
     public Boolean getIsNewDocumentStandard() {
