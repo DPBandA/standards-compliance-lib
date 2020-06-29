@@ -1250,7 +1250,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 + ":marketProductSurveyDialogForm:surveyType,"
                 + ":marketProductSurveyDialogForm:portOfEntry,"
                 + ":marketProductSurveyDialogForm:container,"
-                + ":marketProductSurveyDialogForm:products";
+                + ":marketProductSurveyDialogForm:products,"
+                + "compliance_survey_growl";
     }
 
     public String getDateSearchField() {
