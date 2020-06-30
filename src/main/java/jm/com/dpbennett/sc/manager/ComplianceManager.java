@@ -78,7 +78,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private List<DocumentStandard> documentStandards;
     private Date reportStartDate;
     private Date reportEndDate;
-    private String searchText;
+    private String surveySearchText;
     private String standardSearchText;
     private String reportSearchText;
     private String dateSearchField;
@@ -453,7 +453,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         documentInspections = new ArrayList<>();
         documentStandards = new ArrayList<>();
         dateSearchField = "dateFirstReceived";
-        searchText = "";
+        surveySearchText = "";
         standardSearchText = "";
         searchType = "General";
         dateSearchPeriod = "This month";
@@ -1302,12 +1302,12 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         this.reportStartDate = reportStartDate;
     }
 
-    public String getSearchText() {
-        return searchText;
+    public String getSurveySearchText() {
+        return surveySearchText;
     }
 
-    public void setSearchText(String searchText) {
-        this.searchText = searchText;
+    public void setSurveySearchText(String surveySearchText) {
+        this.surveySearchText = surveySearchText;
     }
 
     public String getStandardSearchText() {
@@ -1343,7 +1343,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
                 getUser(),
                 dateSearchField,
                 "General",
-                searchText,
+                surveySearchText,
                 getDatePeriod().getStartDate(),
                 getDatePeriod().getEndDate(),
                 false);
