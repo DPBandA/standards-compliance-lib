@@ -1024,9 +1024,8 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
         currentProductInspection = new ProductInspection();
         currentProductInspection.setQuantity(0);
         currentProductInspection.setSampleSize(0);
-        
+
         setEdit(false);
-        
 
         openProductInspectionDialog();
     }
@@ -1159,14 +1158,14 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void cancelProductInspection() {
         PrimeFacesUtils.closeDialog(null);
     }
-    
+
     public Boolean getIsNewProductInspection() {
         return getCurrentProductInspection().getId() == null && !getEdit();
     }
 
     public void okProductInspection() {
         try {
-           
+
             if (getIsNewProductInspection()) {
                 currentComplianceSurvey.getProductInspections().add(currentProductInspection);
             }
@@ -1182,13 +1181,11 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public void removeProductInspection(ActionEvent event) {
-        // tk edit
-//        if (activeTabTitle.equals("Compliance Survey")) {
-//            currentComplianceSurvey.getProductInspections().remove(currentProductInspection);
-//            currentProductInspection = new ProductInspection();
-//        }
-//
-//        setDirty(true);
+
+        currentComplianceSurvey.getProductInspections().remove(currentProductInspection);
+        currentProductInspection = new ProductInspection();
+
+        currentComplianceSurvey.setIsDirty(true);
 
     }
 
@@ -1994,7 +1991,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     private void initMainTabView() {
 
         getSystemManager().getMainTabView().openTab("Standards Compliance");
-        
+
     }
 
     private void initDashboard() {
@@ -2043,7 +2040,7 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     }
 
     public List<DocumentStandard> getDocumentStandards() {
-        
+
         return documentStandards;
     }
 
@@ -2071,11 +2068,11 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
     public void editCurrentDocumentStandard() {
         openDocumentStandardDialog();
     }
-    
+
     public void editCurrentProductInspection() {
-       openProductInspectionDialog();
-       
-       setEdit(true);
+        openProductInspectionDialog();
+
+        setEdit(true);
     }
 
     public Boolean getIsNewDocumentStandard() {
