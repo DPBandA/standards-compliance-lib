@@ -45,6 +45,7 @@ import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
 import jm.com.dpbennett.sm.Authentication;
+import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
 import jm.com.dpbennett.sm.util.BeanUtils;
@@ -65,7 +66,7 @@ import org.primefaces.model.UploadedFile;
  *
  * @author Desmond Bennett
  */
-public class ComplianceManager implements Serializable, Authentication.AuthenticationListener {
+public class ComplianceManager implements Serializable, AuthenticationListener {
 
     @PersistenceUnit(unitName = "JMTSPU")
     private EntityManagerFactory EMF1;
@@ -1996,9 +1997,9 @@ public class ComplianceManager implements Serializable, Authentication.Authentic
 
     private void initDashboard() {
 
-        //if (getUser().getModules().getJobManagementAndTrackingModule()) {
-        getSystemManager().getDashboard().openTab("Standards Compliance");
-        //}
+        if (getUser().getModules().getComplianceModule()) {
+            getSystemManager().getDashboard().openTab("Standards Compliance");
+        }
     }
 
     @Override
