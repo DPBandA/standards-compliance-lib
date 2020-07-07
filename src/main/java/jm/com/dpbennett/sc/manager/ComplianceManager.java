@@ -38,6 +38,7 @@ import jm.com.dpbennett.business.entity.sc.DocumentInspection;
 import jm.com.dpbennett.business.entity.sc.ProductInspection;
 import jm.com.dpbennett.business.entity.sc.ShippingContainer;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
+import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -75,8 +76,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private ProductInspection currentProductInspection;
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
+    private Complaint currentComplaint;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
+    private List<Complaint> complaints;
     private Date reportStartDate;
     private Date reportEndDate;
     private String surveySearchText;
@@ -568,6 +571,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().getMainTabView().openTab("Standards");
     }
+    
+    public void openComplaintsBrowser() {
+
+        getSystemManager().getMainTabView().openTab("Complaints");
+    }
 
     public HumanResourceManager getHumanResourceManager() {
 
@@ -580,6 +588,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void surveyDialogReturn() {
+//        if (currentJob.getIsDirty()) {
+//            PreditConsigneeimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
+//            PrimeFaces.current().ajax().update("headerForm:growl3");
+//            currentJob.setIsDirty(false);
+//        }
+    }
+
+    public void complaintDialogReturn() {
 //        if (currentJob.getIsDirty()) {
 //            PreditConsigneeimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
 //            PrimeFaces.current().ajax().update("headerForm:growl3");
@@ -779,6 +795,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public List<ComplianceSurvey> getComplianceSurveys() {
         return complianceSurveys;
+    }
+
+    public List<Complaint> getComplaints() {
+        return complaints;
     }
 
     public String getDialogMessage() {
@@ -1040,7 +1060,28 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         this.currentComplianceSurvey = currentComplianceSurvey;
     }
 
+    public Complaint getCurrentComplaint() {
+        return currentComplaint;
+    }
+
+    public void setCurrentComplaint(Complaint currentComplaint) {
+        this.currentComplaint = currentComplaint;
+    }
+
     public void createNewComplianceSurvey() {
+
+        currentComplianceSurvey = new ComplianceSurvey();
+        currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
+        currentComplianceSurvey.setSurveyType("Commercial Marketplace");
+        currentComplianceSurvey.setDateOfSurvey(new Date());
+        currentComplianceSurvey.setInspector(getUser().getEmployee());
+
+        editComplianceSurvey();
+
+        openSurveyBrowser();
+    }
+
+    public void createNewComplaint() {
 
         currentComplianceSurvey = new ComplianceSurvey();
         currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
@@ -1388,6 +1429,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void editComplianceSurvey() {
         openComplianceSurvey();
+    }
+    
+    public void editComplaint() {
+        PrimeFacesUtils.openDialog(null, "/compliance/complaintDialog", true, true, true, true, 650, 800);
     }
 
     public Boolean getComplianceSurveyIsValid() {
