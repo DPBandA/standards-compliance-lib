@@ -564,17 +564,17 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void openSurveyBrowser() {
 
-        getSystemManager().getMainTabView().openTab("Standards Compliance");
+        getSystemManager().getMainTabView().openTab("Survey Browser");
     }
 
     public void openStandardsBrowser() {
 
         getSystemManager().getMainTabView().openTab("Standards");
     }
-    
+
     public void openComplaintsBrowser() {
 
-        getSystemManager().getMainTabView().openTab("Complaints");
+        getSystemManager().getMainTabView().openTab("Complaint Browser");
     }
 
     public HumanResourceManager getHumanResourceManager() {
@@ -1100,13 +1100,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentDocumentInspection = new DocumentInspection();
 
         currentDocumentInspection.setName(" ");
-//        currentComplianceSurvey.setConsignee(new Client("", false));
+        
         currentDocumentInspection.setDateOfInspection(new Date());
         if (getUser() != null) {
             currentDocumentInspection.setInspector(getUser().getEmployee());
         }
 
-        //setDirty(false);
     }
 
     public void saveComplianceSurvey() {
@@ -1154,7 +1153,38 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             }
 
         } catch (Exception e) {
-            // tk display message
+            
+            System.out.println(e);
+        }
+    }
+    
+    public void saveComplaint() {
+        EntityManager em = getEntityManager1();
+
+        try {
+
+            if (getCurrentComplaint().getIsDirty()) {
+                //getCurrentComplaint().setDateEdited(new Date());
+                //getCurrentComplaint().setEditedBy(getUser().getEmployee());
+            }
+          
+            // Now save complaint  
+            ReturnMessage message = getCurrentComplaint().save(em);
+
+            if (!message.isSuccess()) {
+                PrimeFacesUtils.addMessage("Save Error!",
+                        "An error occured while saving this complaint",
+                        FacesMessage.SEVERITY_ERROR);
+            } else {
+               
+                getCurrentComplaint().setIsDirty(false);
+                PrimeFacesUtils.addMessage("Complaint Saved!",
+                        "This complaint was saved",
+                        FacesMessage.SEVERITY_INFO);
+            }
+
+        } catch (Exception e) {
+            
             System.out.println(e);
         }
     }
@@ -1190,6 +1220,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void closeComplianceSurvey() {
+        PrimeFacesUtils.closeDialog(null);
+    }
+    
+    public void closeDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
 
@@ -1285,15 +1319,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public String getSurveyFormComponentsToUpdate() {
-        return ":marketProductSurveyDialogForm:retailOutlet,"
-                + ":marketProductSurveyDialogForm:inspector,"
-                + ":marketProductSurveyDialogForm:dateAndTimeChecked,"
-                + ":marketProductSurveyDialogForm:comments,"
-                + ":marketProductSurveyDialogForm:surveyType,"
-                + ":marketProductSurveyDialogForm:portOfEntry,"
-                + ":marketProductSurveyDialogForm:container,"
-                + ":marketProductSurveyDialogForm:products,"
-                + "compliance_survey_growl";
+        return "compliance_survey_growl";
     }
 
     public String getDateSearchField() {
@@ -1371,7 +1397,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void doDefaultSearch() {
 
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
-            case "Standards Compliance":
+            case "Survey Browser":
                 doSurveySearch();
                 break;
             default:
@@ -1430,7 +1456,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void editComplianceSurvey() {
         openComplianceSurvey();
     }
-    
+
     public void editComplaint() {
         PrimeFacesUtils.openDialog(null, "/compliance/complaintDialog", true, true, true, true, 650, 800);
     }
@@ -2035,8 +2061,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     private void initMainTabView() {
-
-        getSystemManager().getMainTabView().openTab("Standards Compliance");
+        if (getUser().getModules().getComplianceModule()) {
+            getSystemManager().getMainTabView().openTab("Survey Browser");
+            getSystemManager().getMainTabView().openTab("Complaint Browser");
+        }
 
     }
 
