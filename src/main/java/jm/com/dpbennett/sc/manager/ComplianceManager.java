@@ -214,6 +214,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
+    
+     public void editReceivedVia() {
+        getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
+        getClientManager().setClientDialogTitle("Client Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
 
     public void editBroker() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getBroker());
@@ -252,6 +259,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void createNewComplainant() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Complainant Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+    
+    public void createNewReceivedVia() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Client Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
@@ -294,6 +308,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             getCurrentComplaint().setComplainant(getClientManager().getSelectedClient());
         }
     }
+    
+    public void receivedViaDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentComplaint().setReceivedVia(getClientManager().getSelectedClient());
+        }
+    }
 
     public void brokerDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
@@ -325,6 +345,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public Boolean getIsComplainantNameValid() {
         return BusinessEntityUtils.validateName(currentComplaint.getComplainant().getName());
+    }
+    
+     public Boolean getIsReceivedViaNameValid() {
+        return BusinessEntityUtils.validateName(currentComplaint.getReceivedVia().getName());
     }
 
     public Boolean getIsBrokerNameValid() {
