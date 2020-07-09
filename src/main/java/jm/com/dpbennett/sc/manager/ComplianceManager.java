@@ -83,6 +83,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private Date reportEndDate;
     private String surveySearchText;
     private String standardSearchText;
+    private String complaintSearchText;
     private String reportSearchText;
     private String dateSearchField;
     private String dateSearchPeriod;
@@ -476,23 +477,23 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void reset() {
-        complianceSurveys = new ArrayList<>();
+        
         documentInspections = new ArrayList<>();
-        //documentStandards = new ArrayList<>();
-        dateSearchField = "dateFirstReceived";
+        dateSearchField = "dateOfSurvey";
         surveySearchText = "";
         standardSearchText = "";
+        complaintSearchText = "";
         searchType = "General";
         dateSearchPeriod = "This month";
         reportPeriod = "This month";
-        currentComplianceDailyReport
-                = new ComplianceDailyReport("Report-" + new Date().toString(),
-                        new Date(), "Berth 11", " ");
+//        currentComplianceDailyReport
+//                = new ComplianceDailyReport("Report-" + new Date().toString(),
+//                        new Date(), "Berth 11", " ");
         datePeriod = new DatePeriod("This month", "month", null, null, null, null, false, false, false);
         datePeriod.initDatePeriod();
 
         // Components to update
-        shippingContainerTableToUpdate = ":ComplianceSurveyDialogForm:complianceSurveyTabView:containersTable";
+//        shippingContainerTableToUpdate = ":ComplianceSurveyDialogForm:complianceSurveyTabView:containersTable";
         componentsToUpdate = ":ComplianceSurveyDialogForm";
         complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
@@ -591,11 +592,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void surveyDialogReturn() {
-
+        doSurveySearch();
     }
 
     public void complaintDialogReturn() {
-
+        doComplaintSearch();
     }
 
     public void updateDatePeriodSearch() {
@@ -789,10 +790,18 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public List<ComplianceSurvey> getComplianceSurveys() {
+        if (complianceSurveys == null) {
+            doSurveySearch();
+        }
         return complianceSurveys;
     }
 
     public List<Complaint> getComplaints() {
+
+        if (complaints == null) {
+            complaints = Complaint.findAllComplaints(getEntityManager1());
+        }
+
         return complaints;
     }
 
@@ -1090,6 +1099,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         currentComplaint = new Complaint();
         currentComplaint.setDateReceived(new Date());
+        currentComplaint.setEnteredBy(getUser().getEmployee());
 
         editComplaint();
 
@@ -1165,9 +1175,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         try {
 
-            if (getCurrentComplaint().getIsDirty()) {
-                //getCurrentComplaint().setDateEdited(new Date());
-                //getCurrentComplaint().setEditedBy(getUser().getEmployee());
+            if (getCurrentComplaint().getEnteredBy().getId() == null) {
+                getCurrentComplaint().setEnteredBy(getUser().getEmployee());
             }
 
             // Now save complaint  
@@ -2087,9 +2096,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     private void initMainTabView() {
         if (getUser().getModules().getComplianceModule()) {
-            getSystemManager().getMainTabView().openTab("Survey Browser");
-            getSystemManager().getMainTabView().openTab("Standard Browser");
-            getSystemManager().getMainTabView().openTab("Complaint Browser");
+//            getSystemManager().getMainTabView().openTab("Survey Browser");
+//            getSystemManager().getMainTabView().openTab("Standard Browser");
+//            getSystemManager().getMainTabView().openTab("Complaint Browser");
         }
 
     }
@@ -2149,15 +2158,25 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void doDocumentStandardSearch() {
-        if (standardSearchText.trim().length() > 1) {
-            if (getIsActiveDocumentStandardsOnly()) {
-                documentStandards = DocumentStandard.findActiveDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
-            } else {
-                documentStandards = DocumentStandard.findDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
-            }
+
+        if (getIsActiveDocumentStandardsOnly()) {
+            documentStandards = DocumentStandard.findActiveDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
         } else {
-            documentStandards = new ArrayList<>();
+            documentStandards = DocumentStandard.findDocumentStandardsByAnyPartOfNameOrNumber(getEntityManager1(), standardSearchText);
         }
+
+    }
+
+    public void doComplaintSearch() {
+
+        complaints = Complaint.findComplaintsByDateSearchField(
+                getEntityManager1(),
+                getUser(),
+                "dateReceived",
+                "General",
+                complaintSearchText,
+                null, null);
+
     }
 
     public void onDocumentStandardCellEdit(CellEditEvent event) {
@@ -2235,6 +2254,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getCurrentDocumentStandard().setName(getCurrentDocumentStandard().getName().trim());
 
         updateDocumentStandard();
+    }
+
+    public String getComplaintSearchText() {
+        return complaintSearchText;
+    }
+
+    public void setComplaintSearchText(String complaintSearchText) {
+        this.complaintSearchText = complaintSearchText;
     }
 
 }
