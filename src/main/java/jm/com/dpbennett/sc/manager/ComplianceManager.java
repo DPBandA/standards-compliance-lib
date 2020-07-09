@@ -208,6 +208,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
 
+    public void editComplainant() {
+        getClientManager().setSelectedClient(getCurrentComplaint().getComplainant());
+        getClientManager().setClientDialogTitle("Complainant Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+
     public void editBroker() {
         getClientManager().setSelectedClient(getCurrentComplianceSurvey().getBroker());
         getClientManager().setClientDialogTitle("Broker Detail");
@@ -238,6 +245,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void createNewConsignee() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Consignee Detail");
+
+        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
+    }
+
+    public void createNewComplainant() {
+        getClientManager().createNewClient(true);
+        getClientManager().setClientDialogTitle("Complainant Detail");
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
@@ -275,6 +289,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
     }
 
+    public void complainantDialogReturn() {
+        if (getClientManager().getSelectedClient().getId() != null) {
+            getCurrentComplaint().setComplainant(getClientManager().getSelectedClient());
+        }
+    }
+
     public void brokerDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setBroker(getClientManager().getSelectedClient());
@@ -301,6 +321,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public Boolean getIsConsigneeNameValid() {
         return BusinessEntityUtils.validateName(currentComplianceSurvey.getConsignee().getName());
+    }
+
+    public Boolean getIsComplainantNameValid() {
+        return BusinessEntityUtils.validateName(currentComplaint.getComplainant().getName());
     }
 
     public Boolean getIsBrokerNameValid() {
@@ -511,6 +535,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentComplianceSurvey.setIsDirty(true);
     }
 
+    public void updateComplainant() {
+        currentComplaint.setIsDirty(true);
+    }
+
     public void updateBroker() {
         currentComplianceSurvey.setBrokerRepresentative(new Contact());
         currentComplianceSurvey.setBrokerAddress(new Address());
@@ -522,40 +550,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentComplianceSurvey.setIsDirty(true);
     }
 
-//    public void consigneeDialogReturn() {
-//        if (clientManager.getSelectedClient().getId() != null) {
-//            currentComplianceSurvey.setConsignee(clientManager.getSelectedClient());
-//        }
-//    }
-//    public void createNewConsignee() {
-//        clientManager.createNewClient(true);
-//        clientManager.setIsClientNameAndIdEditable(getUser().getPrivilege().getCanAddClient());
-//
-//        PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
-//    }
-//    public List<Contact> completeConsigneetContact(String query) {
-//        List<Contact> contacts = new ArrayList<>();
-//
-//        try {
-//
-//            for (Contact contact : getCurrentComplianceSurvey().getConsignee().getContacts()) {
-//                if (contact.toString().toUpperCase().contains(query.toUpperCase())) {
-//                    contacts.add(contact);
-//                }
-//            }
-//
-//            return contacts;
-//        } catch (Exception e) {
-//            System.out.println(e);
-//            return new ArrayList<>();
-//        }
-//    }
     public void openComplianceSurvey() {
         PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 800);
     }
 
     public void openProductInspectionDialog() {
         PrimeFacesUtils.openDialog(null, "/compliance/productInspectionDialog", true, true, true, true, 650, 800);
+    }
+
+    public void openComplaintProductInspectionDialog() {
+        PrimeFacesUtils.openDialog(null, "/compliance/complaintProductInspectionDialog", true, true, true, true, 650, 800);
     }
 
     public void openDocumentStandardDialog() {
@@ -588,19 +592,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void surveyDialogReturn() {
-//        if (currentJob.getIsDirty()) {
-//            PreditConsigneeimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("headerForm:growl3");
-//            currentJob.setIsDirty(false);
-//        }
+
     }
 
     public void complaintDialogReturn() {
-//        if (currentJob.getIsDirty()) {
-//            PreditConsigneeimeFacesUtils.addMessage("Job was NOT saved", "The recently edited job was not saved", FacesMessage.SEVERITY_WARN);
-//            PrimeFaces.current().ajax().update("headerForm:growl3");
-//            currentJob.setIsDirty(false);
-//        }
+
     }
 
     public void updateDatePeriodSearch() {
@@ -970,12 +966,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void editComplianceSurveyRetailOutlet() {
     }
 
-    // tk del if found not necessary
-//    public void updateJob() {
-//        //setDirty(true);
-//    }
     public void updateSurvey() {
         getCurrentComplianceSurvey().setIsDirty(true);
+    }
+
+    public void updateComplaint() {
+        getCurrentComplaint().setIsDirty(true);
     }
 
     public void updateEntryDocumentInspection() {
@@ -1051,6 +1047,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         openProductInspectionDialog();
     }
 
+    public void createNewComplaintProductInspection() {
+        currentProductInspection = new ProductInspection();
+        currentProductInspection.setQuantity(0);
+        currentProductInspection.setSampleSize(0);
+
+        setEdit(false);
+
+        openComplaintProductInspectionDialog();
+    }
+
     public ComplianceSurvey getCurrentComplianceSurvey() {
 
         return currentComplianceSurvey;
@@ -1083,15 +1089,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void createNewComplaint() {
 
-        currentComplianceSurvey = new ComplianceSurvey();
-        currentComplianceSurvey.setSurveyLocationType("Commercial Marketplace");
-        currentComplianceSurvey.setSurveyType("Commercial Marketplace");
-        currentComplianceSurvey.setDateOfSurvey(new Date());
-        currentComplianceSurvey.setInspector(getUser().getEmployee());
+        currentComplaint = new Complaint();       
+        currentComplaint.setDateReceived(new Date());
 
-        editComplianceSurvey();
+        editComplaint();
 
-        openSurveyBrowser();
+        openComplaintsBrowser();
     }
 
     public void createNewDocumentInspection() {
@@ -1100,7 +1103,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentDocumentInspection = new DocumentInspection();
 
         currentDocumentInspection.setName(" ");
-        
+
         currentDocumentInspection.setDateOfInspection(new Date());
         if (getUser() != null) {
             currentDocumentInspection.setInspector(getUser().getEmployee());
@@ -1153,11 +1156,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             }
 
         } catch (Exception e) {
-            
+
             System.out.println(e);
         }
     }
-    
+
     public void saveComplaint() {
         EntityManager em = getEntityManager1();
 
@@ -1167,7 +1170,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 //getCurrentComplaint().setDateEdited(new Date());
                 //getCurrentComplaint().setEditedBy(getUser().getEmployee());
             }
-          
+
             // Now save complaint  
             ReturnMessage message = getCurrentComplaint().save(em);
 
@@ -1176,7 +1179,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                         "An error occured while saving this complaint",
                         FacesMessage.SEVERITY_ERROR);
             } else {
-               
+
                 getCurrentComplaint().setIsDirty(false);
                 PrimeFacesUtils.addMessage("Complaint Saved!",
                         "This complaint was saved",
@@ -1184,7 +1187,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             }
 
         } catch (Exception e) {
-            
+
             System.out.println(e);
         }
     }
@@ -1222,7 +1225,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void closeComplianceSurvey() {
         PrimeFacesUtils.closeDialog(null);
     }
-    
+
     public void closeDialog() {
         PrimeFacesUtils.closeDialog(null);
     }
@@ -1256,12 +1259,35 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
     }
 
+    public void okComplaintProductInspection() {
+        try {
+
+            if (getIsNewProductInspection()) {
+                currentComplaint.getProductInspections().add(currentProductInspection);
+            }
+
+            PrimeFacesUtils.closeDialog(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public void removeProductInspection(ActionEvent event) {
 
         currentComplianceSurvey.getProductInspections().remove(currentProductInspection);
         currentProductInspection = new ProductInspection();
 
         currentComplianceSurvey.setIsDirty(true);
+
+    }
+
+    public void removeComplaintProductInspection(ActionEvent event) {
+
+        currentComplaint.getProductInspections().remove(currentProductInspection);
+        currentProductInspection = new ProductInspection();
+
+        currentComplaint.setIsDirty(true);
 
     }
 
@@ -2145,6 +2171,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void editCurrentProductInspection() {
         openProductInspectionDialog();
+
+        setEdit(true);
+    }
+
+    public void editCurrentComplaintProductInspection() {
+        openComplaintProductInspectionDialog();
 
         setEdit(true);
     }
