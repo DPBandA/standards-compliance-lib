@@ -45,7 +45,6 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
 import jm.com.dpbennett.business.entity.util.ReturnMessage;
 import jm.com.dpbennett.cm.manager.ClientManager;
 import jm.com.dpbennett.hrm.manager.HumanResourceManager;
-import jm.com.dpbennett.sm.Authentication;
 import jm.com.dpbennett.sm.Authentication.AuthenticationListener;
 import jm.com.dpbennett.sm.manager.SystemManager;
 import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectItems;
@@ -479,7 +478,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void reset() {
         complianceSurveys = new ArrayList<>();
         documentInspections = new ArrayList<>();
-        documentStandards = new ArrayList<>();
+        //documentStandards = new ArrayList<>();
         dateSearchField = "dateFirstReceived";
         surveySearchText = "";
         standardSearchText = "";
@@ -566,14 +565,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         PrimeFacesUtils.openDialog(null, "/compliance/documentStandardDialog", true, true, true, true, 650, 800);
     }
 
-    public void openSurveyBrowser() {
+    public void openSurveysBrowser() {
 
         getSystemManager().getMainTabView().openTab("Survey Browser");
     }
 
     public void openStandardsBrowser() {
 
-        getSystemManager().getMainTabView().openTab("Standards");
+        getSystemManager().getMainTabView().openTab("Standard Browser");
     }
 
     public void openComplaintsBrowser() {
@@ -1084,12 +1083,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         editComplianceSurvey();
 
-        openSurveyBrowser();
+        openSurveysBrowser();
     }
 
     public void createNewComplaint() {
 
-        currentComplaint = new Complaint();       
+        currentComplaint = new Complaint();
         currentComplaint.setDateReceived(new Date());
 
         editComplaint();
@@ -1442,7 +1441,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 getDatePeriod().getEndDate(),
                 false);
 
-        openSurveyBrowser();
+        openSurveysBrowser();
     }
 
     public List<String> completeSearchText(String query) {
@@ -2089,6 +2088,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private void initMainTabView() {
         if (getUser().getModules().getComplianceModule()) {
             getSystemManager().getMainTabView().openTab("Survey Browser");
+            getSystemManager().getMainTabView().openTab("Standard Browser");
             getSystemManager().getMainTabView().openTab("Complaint Browser");
         }
 
@@ -2140,6 +2140,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public List<DocumentStandard> getDocumentStandards() {
+
+        if (documentStandards == null) {
+            documentStandards = DocumentStandard.findAllActiveDocumentStandards(getEntityManager1());
+        }
 
         return documentStandards;
     }
