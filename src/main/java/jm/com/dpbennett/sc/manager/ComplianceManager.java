@@ -39,6 +39,7 @@ import jm.com.dpbennett.business.entity.sc.ProductInspection;
 import jm.com.dpbennett.business.entity.sc.ShippingContainer;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sc.Complaint;
+import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
 import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
@@ -75,14 +76,18 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private ProductInspection currentProductInspection;
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
+    private MarketProduct currentMarketProduct;
+    private MarketProduct marketProduct;
     private Complaint currentComplaint;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
+    private List<MarketProduct> marketProducts;
     private List<Complaint> complaints;
     private Date reportStartDate;
     private Date reportEndDate;
     private String surveySearchText;
     private String standardSearchText;
+    private String marketProductSearchText;
     private String complaintSearchText;
     private String reportSearchText;
     private String dateSearchField;
@@ -105,6 +110,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private String shippingContainerTableToUpdate;
     private String complianceSurveyTableToUpdate;
     private Boolean isActiveDocumentStandardsOnly;
+    private Boolean isActiveMarketProductsOnly;
     private Boolean edit;
 
     /**
@@ -118,6 +124,30 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public MarketProduct getCurrentMarketProduct() {
+        return currentMarketProduct;
+    }
+
+    public void setCurrentMarketProduct(MarketProduct currentMarketProduct) {
+        this.currentMarketProduct = currentMarketProduct;
+    }
+
+    public String getMarketProductSearchText() {
+        return marketProductSearchText;
+    }
+
+    public void setMarketProductSearchText(String marketProductSearchText) {
+        this.marketProductSearchText = marketProductSearchText;
+    }
+
+    public List<MarketProduct> getMarketProducts() {
+        return marketProducts;
+    }
+
+    public void setMarketProducts(List<MarketProduct> marketProducts) {
+        this.marketProducts = marketProducts;
     }
 
     public Boolean getEdit() {
@@ -214,8 +244,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
-     public void editReceivedVia() {
+
+    public void editReceivedVia() {
         getClientManager().setSelectedClient(getCurrentComplaint().getReceivedVia());
         getClientManager().setClientDialogTitle("Client Detail");
 
@@ -262,7 +292,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         PrimeFacesUtils.openDialog(null, "/client/clientDialog", true, true, true, 450, 700);
     }
-    
+
     public void createNewReceivedVia() {
         getClientManager().createNewClient(true);
         getClientManager().setClientDialogTitle("Client Detail");
@@ -308,7 +338,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             getCurrentComplaint().setComplainant(getClientManager().getSelectedClient());
         }
     }
-    
+
     public void receivedViaDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplaint().setReceivedVia(getClientManager().getSelectedClient());
@@ -346,8 +376,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public Boolean getIsComplainantNameValid() {
         return BusinessEntityUtils.validateName(currentComplaint.getComplainant().getName());
     }
-    
-     public Boolean getIsReceivedViaNameValid() {
+
+    public Boolean getIsReceivedViaNameValid() {
         return BusinessEntityUtils.validateName(currentComplaint.getReceivedVia().getName());
     }
 
@@ -501,26 +531,30 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void reset() {
-        
+
         documentInspections = new ArrayList<>();
         dateSearchField = "dateOfSurvey";
         surveySearchText = "";
         standardSearchText = "";
         complaintSearchText = "";
+        marketProductSearchText = "";
         searchType = "General";
         dateSearchPeriod = "This month";
         reportPeriod = "This month";
-//        currentComplianceDailyReport
-//                = new ComplianceDailyReport("Report-" + new Date().toString(),
-//                        new Date(), "Berth 11", " ");
         datePeriod = new DatePeriod("This month", "month", null, null, null, null, false, false, false);
         datePeriod.initDatePeriod();
-
-        // Components to update
-//        shippingContainerTableToUpdate = ":ComplianceSurveyDialogForm:complianceSurveyTabView:containersTable";
         componentsToUpdate = ":ComplianceSurveyDialogForm";
         complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
+        isActiveMarketProductsOnly = true;
+    }
+
+    public Boolean getIsActiveMarketProductsOnly() {
+        return isActiveMarketProductsOnly;
+    }
+
+    public void setIsActiveMarketProductsOnly(Boolean isActiveMarketProductsOnly) {
+        this.isActiveMarketProductsOnly = isActiveMarketProductsOnly;
     }
 
     public Boolean getIsActiveDocumentStandardsOnly() {
@@ -963,10 +997,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         ArrayList<String> contactsFound = new ArrayList<>();
 
         return contactsFound;
-
-    }
-
-    public void createNewMarketProduct() {
 
     }
 
@@ -2123,6 +2153,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 //            getSystemManager().getMainTabView().openTab("Survey Browser");
 //            getSystemManager().getMainTabView().openTab("Standard Browser");
 //            getSystemManager().getMainTabView().openTab("Complaint Browser");
+            getSystemManager().getMainTabView().openTab("Market Products");
         }
 
     }
@@ -2154,6 +2185,41 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
             return new ArrayList<>();
         }
+    }
+
+    public MarketProduct getMarketProduct() {
+        return marketProduct;
+    }
+
+    public void setMarketProduct(MarketProduct marketProduct) {
+        this.marketProduct = marketProduct;
+    }
+
+    public void createNewMarketProduct() {
+        marketProduct = new MarketProduct();
+
+        openMarketProductDialog();
+
+        openMarketProductBrowser();
+    }
+
+    public void openMarketProductDialog() {
+        PrimeFacesUtils.openDialog(null, "/compliance/marketProductDialog", true, true, true, true, 650, 800);
+    }
+
+    public void openMarketProductBrowser() {
+
+        getSystemManager().getMainTabView().openTab("Market Products");
+    }
+
+    public void doMarketProductSearch() {
+
+        if (getIsActiveMarketProductsOnly()) {
+            marketProducts = MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(getEntityManager1(), marketProductSearchText);
+        } else {
+            marketProducts = MarketProduct.findMarketProductsByAnyPartOfNameOrDescription(getEntityManager1(), marketProductSearchText);
+        }
+
     }
 
     public DocumentStandard getCurrentDocumentStandard() {
@@ -2208,12 +2274,29 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 getDocumentStandards().get(event.getRowIndex()));
     }
 
+    public void onMarketProductCellEdit(CellEditEvent event) {
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
+                getMarketProducts().get(event.getRowIndex()));
+    }
+
     public int getNumDocumentStandards() {
         return getDocumentStandards().size();
     }
 
+    public int getNumMarketProducts() {
+        if (marketProducts != null) {
+            return getMarketProducts().size();
+        } else {
+            return 0;
+        }
+    }
+
     public void editCurrentDocumentStandard() {
         openDocumentStandardDialog();
+    }
+
+    public void editCurrentMarketProduct() {
+        openMarketProductDialog();
     }
 
     public void editCurrentProductInspection() {
@@ -2264,14 +2347,42 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
     }
 
+    public void okMarketProduct() {
+
+        try {
+
+            // Do save
+            if (getCurrentMarketProduct().getIsDirty()) {
+
+                getCurrentMarketProduct().save(getEntityManager1());
+                getCurrentMarketProduct().setIsDirty(false);
+            }
+
+            PrimeFaces.current().dialog().closeDynamic(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public void cancelDocumentStandardEdit() {
         getCurrentDocumentStandard().setIsDirty(false);
 
         PrimeFaces.current().dialog().closeDynamic(null);
     }
 
+    public void cancelMarketProductEdit() {
+        getCurrentMarketProduct().setIsDirty(false);
+
+        PrimeFaces.current().dialog().closeDynamic(null);
+    }
+
     public void updateDocumentStandard() {
         getCurrentDocumentStandard().setIsDirty(true);
+    }
+
+    public void updateMarketProduct() {
+        getCurrentMarketProduct().setIsDirty(true);
     }
 
     public void updateDocumentStandardName(AjaxBehaviorEvent event) {

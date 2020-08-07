@@ -31,8 +31,8 @@ import jm.com.dpbennett.business.entity.util.BusinessEntityUtils;
  *
  * @author desbenn
  */
-@FacesValidator("documentStandardValidator")
-public class DocumentStandardValidator implements Validator {
+@FacesValidator("marketProductValidator")
+public class MarketProductValidator implements Validator {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
