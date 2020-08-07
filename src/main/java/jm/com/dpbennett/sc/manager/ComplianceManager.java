@@ -77,7 +77,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
     private MarketProduct currentMarketProduct;
-    private MarketProduct marketProduct;
     private Complaint currentComplaint;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
@@ -2187,16 +2186,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
     }
 
-    public MarketProduct getMarketProduct() {
-        return marketProduct;
-    }
-
-    public void setMarketProduct(MarketProduct marketProduct) {
-        this.marketProduct = marketProduct;
-    }
-
     public void createNewMarketProduct() {
-        marketProduct = new MarketProduct();
+        currentMarketProduct = new MarketProduct();
 
         openMarketProductDialog();
 
