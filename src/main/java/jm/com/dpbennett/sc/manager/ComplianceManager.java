@@ -2156,6 +2156,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 //            getSystemManager().getMainTabView().openTab("Standard Browser");
 //            getSystemManager().getMainTabView().openTab("Complaint Browser");
             getSystemManager().getMainTabView().openTab("Market Products");
+            getSystemManager().getMainTabView().openTab("Manufacturers");
         }
         
     }
