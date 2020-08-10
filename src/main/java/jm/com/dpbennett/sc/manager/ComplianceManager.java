@@ -78,12 +78,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private CompanyRegistration currentCompanyRegistration;
     private DocumentStandard currentDocumentStandard;
     private MarketProduct currentMarketProduct;
-    private Complaint currentComplaint;    
+    private Complaint currentComplaint;
     private FactoryInspection currentFactoryInspection;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
     private List<MarketProduct> marketProducts;
     private List<Complaint> complaints;
+    private List<FactoryInspection> factoryInspections;
     private Date reportStartDate;
     private Date reportEndDate;
     private String surveySearchText;
@@ -91,6 +92,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private String marketProductSearchText;
     private String complaintSearchText;
     private String reportSearchText;
+    private String factoryInspectionSearchText;
     private String dateSearchField;
     private String dateSearchPeriod;
     private String reportPeriod;
@@ -125,6 +127,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public String getFactoryInspectionSearchText() {
+        return factoryInspectionSearchText;
+    }
+
+    public void setFactoryInspectionSearchText(String factoryInspectionSearchText) {
+        this.factoryInspectionSearchText = factoryInspectionSearchText;
     }
 
     public MarketProduct getCurrentMarketProduct() {
@@ -537,11 +547,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void reset() {
 
         documentInspections = new ArrayList<>();
+        factoryInspections = new ArrayList<>();
         dateSearchField = "dateOfSurvey";
         surveySearchText = "";
         standardSearchText = "";
         complaintSearchText = "";
         marketProductSearchText = "";
+        factoryInspectionSearchText = "";
         searchType = "General";
         dateSearchPeriod = "This month";
         reportPeriod = "This month";
@@ -551,6 +563,27 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
         isActiveMarketProductsOnly = true;
+    }
+
+    public List<FactoryInspection> getFactoryInspections() {
+        return factoryInspections;
+    }
+
+    public void setFactoryInspections(List<FactoryInspection> factoryInspections) {
+        this.factoryInspections = factoryInspections;
+    }
+
+    public void onFactoryInspectionCellEdit(CellEditEvent event) {
+        BusinessEntityUtils.saveBusinessEntityInTransaction(getEntityManager1(),
+                getFactoryInspections().get(event.getRowIndex()));
+    }
+
+    public int getNumFactoryInspectionsFound() {
+        return getFactoryInspections().size();
+    }
+    
+    public void editCurrentFactoryInspection() {
+        System.out.println("Impl...");
     }
 
     public Boolean getIsActiveMarketProductsOnly() {
@@ -2412,9 +2445,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void createNewFactoryInspection() {
-         currentFactoryInspection = new FactoryInspection();
+        currentFactoryInspection = new FactoryInspection();
     }
-   
+
     public FactoryInspection getCurrentFactoryInspection() {
         if (currentFactoryInspection == null) {
             return new FactoryInspection();
@@ -2426,5 +2459,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         this.currentFactoryInspection = currentFactoryInspection;
     }
 
+    public void doFactoryInspectionSearch() {
+//        if (factoryInspectionSearchText.trim().length() > 1) {
+//            if (getIsActiveManufacturersOnly()) {
+//                foundManufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager1(), factoryInspectionSearchText);
+//            } else {
+//                foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
+//            }
+//        } else {
+//            foundManufacturers = new ArrayList<>();
+//        }
+    }
 
 }
