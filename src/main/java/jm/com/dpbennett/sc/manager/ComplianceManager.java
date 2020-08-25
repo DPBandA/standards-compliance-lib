@@ -57,12 +57,11 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.primefaces.PrimeFaces;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
 
 /**
  *
@@ -1198,7 +1197,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void createNewDocumentInspection() {
-        RequestContext context = RequestContext.getCurrentInstance();
 
         currentDocumentInspection = new DocumentInspection();
 
@@ -1568,7 +1566,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         try {
             fout = new FileOutputStream(imageURL);
-            fout.write(upLoadedFile.getContents());
+            fout.write(upLoadedFile.getContent());
             fout.close();
 
             getCurrentProductInspection().setImageURL(upLoadedFileName);
