@@ -188,6 +188,24 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             return new ArrayList<>();
         }
     }
+    
+    public List<Contact> completeFactoryRepresentative(String query) {
+        List<Contact> contacts = new ArrayList<>();
+
+        try {
+
+            for (Contact contact : getCurrentFactoryInspection().getManufacturer().getContacts()) {
+                if (contact.toString().toUpperCase().contains(query.toUpperCase())) {
+                    contacts.add(contact);
+                }
+            }
+
+            return contacts;
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
 
     public List<Contact> completeBrokerRepresentative(String query) {
         List<Contact> contacts = new ArrayList<>();
