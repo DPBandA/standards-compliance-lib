@@ -277,6 +277,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
+    
+    public void editFactoryInspectionManufacturer() {
+        getHumanResourceManager().setSelectedManufacturer(getCurrentFactoryInspection().getManufacturer());
+
+        PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
+    }
 
     public void editDistributor() {
         getClientManager().setSelectedClient(getCurrentProductInspection().getDistributor());
@@ -375,6 +381,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             getCurrentProductInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
         }
     }
+    
+    public void factoryInspectionManufacturerDialogReturn() {
+        if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
+            getCurrentFactoryInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
+        }
+    }
 
     public void retailOutletDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
@@ -400,6 +412,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public Boolean getIsManufacturerNameValid() {
         return BusinessEntityUtils.validateName(currentProductInspection.getManufacturer().getName());
+    }
+    
+    public Boolean getIsFactoryInspectionManufacturerNameValid() {
+        return BusinessEntityUtils.validateName(currentFactoryInspection.getManufacturer().getName());
     }
 
     public Boolean getIsDistributorNameValid() {
@@ -1075,6 +1091,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateComplaint() {
         getCurrentComplaint().setIsDirty(true);
     }
+    
+    public void updateFactoryInspection() {
+        getCurrentFactoryInspection().setIsDirty(true);
+    }
 
     public void updateEntryDocumentInspection() {
         getCurrentComplianceSurvey().getEntryDocumentInspection().setIsDirty(true);
@@ -1267,43 +1287,18 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
 
         try {
-
-            // Ensure inspector is not null
-            Employee inspector = Employee.findEmployeeByName(em, currentComplianceSurvey.getInspector().getName());
-            if (inspector != null) {
-                currentComplianceSurvey.setInspector(inspector);
-            } else {
-                currentComplianceSurvey.setInspector(Employee.findDefaultEmployee(em, "--", "--", true));
-            }
-
-            // Validate fields required for port of entry detention if one was issued
-            // NB: This should be in validation code.
-            if (currentComplianceSurvey.getRequestForDetentionIssuedForPortOfEntry()) {
-                if (!validatePortOfEntryDetentionData(em)) {
-                    return;
-                }
-            }
-
-            if (getCurrentComplianceSurvey().getIsDirty()) {
-                currentComplianceSurvey.setDateEdited(new Date());
-                currentComplianceSurvey.setEditedBy(getUser().getEmployee());
-            }
-            //em.getTransaction().begin();
-
-            // Now save survey            
-            //Long id = BusinessEntityUtils.saveBusinessEntity(em, currentComplianceSurvey);
-            //em.getTransaction().commit();
-            ReturnMessage message = currentComplianceSurvey.save(em);
+          
+            ReturnMessage message = currentFactoryInspection.save(em);
 
             if (!message.isSuccess()) {
                 PrimeFacesUtils.addMessage("Save Error!",
-                        "An error occured while saving this survey",
+                        "An error occured while saving this factory inspection",
                         FacesMessage.SEVERITY_ERROR);
             } else {
-                //isNewComplianceSurvey = false;
-                currentComplianceSurvey.setIsDirty(false);
-                PrimeFacesUtils.addMessage("Survey Saved!",
-                        "This survey was saved",
+                
+                currentFactoryInspection.setIsDirty(false);
+                PrimeFacesUtils.addMessage("Factory inspection Saved!",
+                        "This factory inspection was saved",
                         FacesMessage.SEVERITY_INFO);
             }
 
