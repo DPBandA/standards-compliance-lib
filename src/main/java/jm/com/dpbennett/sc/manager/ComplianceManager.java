@@ -2511,6 +2511,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void createNewFactoryInspection() {
         currentFactoryInspection = new FactoryInspection();
+        currentFactoryInspection.setInspectionDate(new Date());        
         
         editFactoryInspection();
     }
