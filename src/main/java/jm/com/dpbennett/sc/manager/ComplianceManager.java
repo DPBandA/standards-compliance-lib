@@ -188,7 +188,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             return new ArrayList<>();
         }
     }
-    
+
     public List<Contact> completeFactoryRepresentative(String query) {
         List<Contact> contacts = new ArrayList<>();
 
@@ -295,7 +295,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         PrimeFacesUtils.openDialog(null, "/hr/manufacturer/manufacturerDialog", true, true, true, 450, 700);
     }
-    
+
     public void editFactoryInspectionManufacturer() {
         getHumanResourceManager().setSelectedManufacturer(getCurrentFactoryInspection().getManufacturer());
 
@@ -399,7 +399,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             getCurrentProductInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
         }
     }
-    
+
     public void factoryInspectionManufacturerDialogReturn() {
         if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
             getCurrentFactoryInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
@@ -431,7 +431,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public Boolean getIsManufacturerNameValid() {
         return BusinessEntityUtils.validateName(currentProductInspection.getManufacturer().getName());
     }
-    
+
     public Boolean getIsFactoryInspectionManufacturerNameValid() {
         return BusinessEntityUtils.validateName(currentFactoryInspection.getManufacturer().getName());
     }
@@ -614,7 +614,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public int getNumFactoryInspectionsFound() {
         return getFactoryInspections().size();
     }
-    
+
     public void editCurrentFactoryInspection() {
         System.out.println("Impl...");
     }
@@ -681,7 +681,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void openComplianceSurvey() {
         PrimeFacesUtils.openDialog(null, "/compliance/surveyDialog", true, true, true, true, 650, 800);
     }
-    
+
     public void editFactoryInspection() {
         PrimeFacesUtils.openDialog(null, "/compliance/factoryInspectionDialog", true, true, true, true, 650, 800);
     }
@@ -1109,7 +1109,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateComplaint() {
         getCurrentComplaint().setIsDirty(true);
     }
-    
+
     public void updateFactoryInspection() {
         getCurrentFactoryInspection().setIsDirty(true);
     }
@@ -1206,6 +1206,33 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         this.currentComplianceSurvey = currentComplianceSurvey;
     }
 
+    public List<Address> completeManufacturerAddress(String query) {
+        List<Address> addresses = new ArrayList<>();
+
+        try {
+
+            for (Address address : getCurrentFactoryInspection().getManufacturer().getAddresses()) {
+                if (address.toString().toUpperCase().contains(query.toUpperCase())) {
+                    addresses.add(address);
+                }
+            }
+
+            return addresses;
+        } catch (Exception e) {
+
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
+    public void updateManufacturer() {
+
+        currentFactoryInspection.setAddress(new Address());
+        currentFactoryInspection.setFactoryRepresentative(new Contact());
+
+        updateFactoryInspection();
+    }
+
     public Complaint getCurrentComplaint() {
         return currentComplaint;
     }
@@ -1300,12 +1327,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             System.out.println(e);
         }
     }
-    
+
     public void saveFactoryInspection() {
         EntityManager em = getEntityManager1();
 
         try {
-          
+
             ReturnMessage message = currentFactoryInspection.save(em);
 
             if (!message.isSuccess()) {
@@ -1313,7 +1340,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                         "An error occured while saving this factory inspection",
                         FacesMessage.SEVERITY_ERROR);
             } else {
-                
+
                 currentFactoryInspection.setIsDirty(false);
                 PrimeFacesUtils.addMessage("Factory inspection Saved!",
                         "This factory inspection was saved",
@@ -2511,8 +2538,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void createNewFactoryInspection() {
         currentFactoryInspection = new FactoryInspection();
-        currentFactoryInspection.setInspectionDate(new Date());        
-        
+        currentFactoryInspection.setInspectionDate(new Date());
+
         editFactoryInspection();
     }
 
