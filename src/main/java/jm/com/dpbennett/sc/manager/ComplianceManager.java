@@ -41,6 +41,7 @@ import jm.com.dpbennett.business.entity.sc.ShippingContainer;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
+import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
 import jm.com.dpbennett.business.entity.sc.InspectionComponent;
 import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
@@ -155,7 +156,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             
             if (factoryInspection != null) {
                getCurrentFactoryInspection().getInspectionComponents().clear();
-                 getCurrentFactoryInspection().setInspectionComponents(copyCostComponents(jcp.getCostComponents()));
+               getCurrentFactoryInspection().setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
 
                 updateFactoryInspection();
             }
@@ -165,14 +166,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
     }
      
-    public List<InspectionComponent> copyInspectionComponents(List<InspectionComponent> srcInspectionComponents) {
-        ArrayList<InspectionComponent> newInspectionComponents = new ArrayList<>();
+    public List<FactoryInspectionComponent> copyFactoryInspectionComponents(List<FactoryInspectionComponent> srcFactoryInspectionComponents) {
+        ArrayList<FactoryInspectionComponent> newFactoryInspectionComponents = new ArrayList<>();
 
-        for (InspectionComponent inspectionComponent : srcInspectionComponents) {
-            newInspectionComponents.add(new InspectionComponent(inspectionComponent));
+        for (FactoryInspectionComponent factoryInspectionComponent : srcFactoryInspectionComponents) {
+            newFactoryInspectionComponents.add(new FactoryInspectionComponent(factoryInspectionComponent));
         }
 
-        return newInspectionComponents;
+        return newFactoryInspectionComponents;
     }
 
     public String getSelectedFactoryInspectionTemplate() {
