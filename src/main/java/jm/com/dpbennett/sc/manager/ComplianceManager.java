@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
+import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Contact;
@@ -40,6 +41,7 @@ import jm.com.dpbennett.business.entity.sc.ShippingContainer;
 import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
+import jm.com.dpbennett.business.entity.sc.InspectionComponent;
 import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -106,7 +108,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private List<DocumentInspection> documentInspections;
     private DatePeriod datePeriod;
     private List<String> selectedStandardNames;
-    //private Boolean surveysWithProductInspection;
+    private String selectedFactoryInspectionTemplate;
     private List<String> selectedContainerNumbers;
     private String componentsToUpdate;
     private String shippingContainerTableToUpdate;
@@ -126,6 +128,59 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+
+    public List<FactoryInspection> completeFactoryInspectionName(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            List<FactoryInspection> results = FactoryInspection.findFactoryInspectionsByName(em, query);
+
+            return results;
+
+        } catch (Exception e) {
+            System.out.println(e);
+
+            return new ArrayList<>();
+        }
+    }
+    
+     public void updateInspectionComponents() {
+        if (selectedFactoryInspectionTemplate != null) {
+            EntityManager em = getEntityManager1();
+            FactoryInspection factoryInspection
+                    = FactoryInspection.findFactoryInspectionByName(em, selectedFactoryInspectionTemplate);
+            
+            if (factoryInspection != null) {
+               getCurrentFactoryInspection().getInspectionComponents().clear();
+                 getCurrentFactoryInspection().setInspectionComponents(copyCostComponents(jcp.getCostComponents()));
+
+                updateFactoryInspection();
+            }
+
+            selectedFactoryInspectionTemplate = null;
+
+        }
+    }
+     
+    public List<InspectionComponent> copyInspectionComponents(List<InspectionComponent> srcInspectionComponents) {
+        ArrayList<InspectionComponent> newInspectionComponents = new ArrayList<>();
+
+        for (InspectionComponent inspectionComponent : srcInspectionComponents) {
+            newInspectionComponents.add(new InspectionComponent(inspectionComponent));
+        }
+
+        return newInspectionComponents;
+    }
+
+    public String getSelectedFactoryInspectionTemplate() {
+        return selectedFactoryInspectionTemplate;
+    }
+
+    public void setSelectedFactoryInspectionTemplate(String selectedFactoryInspectionTemplate) {
+        this.selectedFactoryInspectionTemplate = selectedFactoryInspectionTemplate;
     }
 
     public String getFactoryInspectionSearchText() {
