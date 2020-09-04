@@ -130,21 +130,23 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getSystemManager().addSingleAuthenticationListener(this);
     }
     
+    public void cancelFactoryInspectionComponentEdit() {
+        currentFactoryInspectionComponent.setIsDirty(false);
+    }
+    
     public void createNewFactoryInspectionComponent(ActionEvent event) {
         currentFactoryInspectionComponent = new FactoryInspectionComponent();
         setEdit(false);
     }
     
-     public void okCostingComponent() {
+     public void okFactoryInspectionComponent() {
         if (selectedCostComponent.getId() == null && !getEdit()) {
             getCurrentJob().getJobCostingAndPayment().getCostComponents().add(selectedCostComponent);
         }
 
         setEdit(false);
-        updateFinalCost();
-        updateAmountDue();
-
-        PrimeFaces.current().executeScript("PF('costingComponentDialog').hide();");
+        
+        PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
     }
 
     public List<FactoryInspection> completeFactoryInspectionName(String query) {
