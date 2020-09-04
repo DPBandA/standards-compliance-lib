@@ -148,6 +148,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         
         //PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
     }
+     
+    public void editFactoryInspectionComponent(ActionEvent event) {
+        setEdit(true);
+    }
 
     public List<FactoryInspection> completeFactoryInspectionName(String query) {
         EntityManager em;
