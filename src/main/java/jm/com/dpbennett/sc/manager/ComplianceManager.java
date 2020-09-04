@@ -140,13 +140,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
     
      public void okFactoryInspectionComponent() {
-        if (selectedCostComponent.getId() == null && !getEdit()) {
-            getCurrentJob().getJobCostingAndPayment().getCostComponents().add(selectedCostComponent);
+        if (currentFactoryInspectionComponent.getId() == null && !getEdit()) {
+            getCurrentFactoryInspection().getInspectionComponents().add(currentFactoryInspectionComponent);
         }
 
         setEdit(false);
         
-        PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
+        //PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
     }
 
     public List<FactoryInspection> completeFactoryInspectionName(String query) {
