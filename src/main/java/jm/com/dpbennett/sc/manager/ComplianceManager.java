@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
-import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Contact;
@@ -42,7 +41,6 @@ import jm.com.dpbennett.business.entity.hrm.Manufacturer;
 import jm.com.dpbennett.business.entity.sc.Complaint;
 import jm.com.dpbennett.business.entity.sc.FactoryInspection;
 import jm.com.dpbennett.business.entity.sc.FactoryInspectionComponent;
-import jm.com.dpbennett.business.entity.sc.InspectionComponent;
 import jm.com.dpbennett.business.entity.sc.MarketProduct;
 import jm.com.dpbennett.business.entity.sm.SequenceNumber;
 import jm.com.dpbennett.business.entity.sm.SystemOption;
@@ -82,6 +80,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private MarketProduct currentMarketProduct;
     private Complaint currentComplaint;
     private FactoryInspection currentFactoryInspection;
+    private FactoryInspectionComponent currentFactoryInspectionComponent;
     private List<ComplianceSurvey> complianceSurveys;
     private List<DocumentStandard> documentStandards;
     private List<MarketProduct> marketProducts;
@@ -129,6 +128,23 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+    
+    public void createNewFactoryInspectionComponent(ActionEvent event) {
+        currentFactoryInspectionComponent = new FactoryInspectionComponent();
+        setEdit(false);
+    }
+    
+     public void okCostingComponent() {
+        if (selectedCostComponent.getId() == null && !getEdit()) {
+            getCurrentJob().getJobCostingAndPayment().getCostComponents().add(selectedCostComponent);
+        }
+
+        setEdit(false);
+        updateFinalCost();
+        updateAmountDue();
+
+        PrimeFaces.current().executeScript("PF('costingComponentDialog').hide();");
     }
 
     public List<FactoryInspection> completeFactoryInspectionName(String query) {
