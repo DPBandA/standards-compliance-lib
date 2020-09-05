@@ -679,7 +679,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void reset() {
 
         documentInspections = new ArrayList<>();
-        factoryInspections = new ArrayList<>();
         dateSearchField = "dateOfSurvey";
         surveySearchText = "";
         standardSearchText = "";
@@ -698,6 +697,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public List<FactoryInspection> getFactoryInspections() {
+        if (factoryInspections == null) {
+            doFactoryInspectionSearch();
+        }
         return factoryInspections;
     }
 
@@ -715,7 +717,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void editCurrentFactoryInspection() {
-        System.out.println("Impl...");
+       editFactoryInspection(); 
     }
 
     public Boolean getIsActiveMarketProductsOnly() {
@@ -2654,23 +2656,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void doFactoryInspectionSearch() {
-        //if (factoryInspectionSearchText.trim().length() > 1) {
-            //if (getIsActiveManufacturersOnly()) {
-            factoryInspections = FactoryInspection.findFactoryInspectionsByDateSearchField(
-                    getEntityManager1(),
-                    null,
-                    "General",
-                    factoryInspectionSearchText,
-                    null, null);
-            //} else {
-            //foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
-            //}
-            //} else {
-            //foundManufacturers = new ArrayList<>();
-            //}
-        //} else {
-        //    factoryInspections = new ArrayList<>();
-        //}
 
+        factoryInspections = FactoryInspection.findFactoryInspectionsByDateSearchField(
+                getEntityManager1(),
+                null,
+                "General",
+                factoryInspectionSearchText,
+                null, null);
     }
 }
