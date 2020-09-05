@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
+import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Contact;
@@ -147,6 +148,27 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         setEdit(false);
         
         //PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
+    }
+     
+     public void deleteFactoryInspectionComponent() {
+        deleteFactoryInspectionComponentByName(currentFactoryInspectionComponent.getName());
+    }
+
+    public void deleteFactoryInspectionComponentByName(String componentName) {
+
+        List<FactoryInspectionComponent> components = getCurrentFactoryInspection().getAllSortedFactoryInspectionComponents();
+        int index = 0;
+        for (FactoryInspectionComponent factoryInspectionComponent : components) {
+            if (factoryInspectionComponent.getName().equals(componentName)) {
+                components.remove(index);
+                
+                updateFactoryInspection();
+
+                break;
+            }
+            ++index;
+        }
+
     }
      
     public void editFactoryInspectionComponent(ActionEvent event) {
