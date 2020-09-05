@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
-import jm.com.dpbennett.business.entity.fm.CostComponent;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.hrm.Address;
 import jm.com.dpbennett.business.entity.hrm.Contact;
@@ -130,27 +129,27 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public void cancelFactoryInspectionComponentEdit() {
         currentFactoryInspectionComponent.setIsDirty(false);
     }
-    
+
     public void createNewFactoryInspectionComponent(ActionEvent event) {
         currentFactoryInspectionComponent = new FactoryInspectionComponent();
         setEdit(false);
     }
-    
-     public void okFactoryInspectionComponent() {
+
+    public void okFactoryInspectionComponent() {
         if (currentFactoryInspectionComponent.getId() == null && !getEdit()) {
             getCurrentFactoryInspection().getInspectionComponents().add(currentFactoryInspectionComponent);
         }
 
         setEdit(false);
-        
+
         //PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
     }
-     
-     public void deleteFactoryInspectionComponent() {
+
+    public void deleteFactoryInspectionComponent() {
         deleteFactoryInspectionComponentByName(currentFactoryInspectionComponent.getName());
     }
 
@@ -161,7 +160,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         for (FactoryInspectionComponent factoryInspectionComponent : components) {
             if (factoryInspectionComponent.getName().equals(componentName)) {
                 components.remove(index);
-                
+
                 updateFactoryInspection();
 
                 break;
@@ -170,7 +169,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
 
     }
-     
+
     public void editFactoryInspectionComponent(ActionEvent event) {
         setEdit(true);
     }
@@ -191,16 +190,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             return new ArrayList<>();
         }
     }
-    
-     public void updateInspectionComponents() {
+
+    public void updateInspectionComponents() {
         if (selectedFactoryInspectionTemplate != null) {
             EntityManager em = getEntityManager1();
             FactoryInspection factoryInspection
                     = FactoryInspection.findFactoryInspectionByName(em, selectedFactoryInspectionTemplate);
-            
+
             if (factoryInspection != null) {
-               getCurrentFactoryInspection().getInspectionComponents().clear();
-               getCurrentFactoryInspection().setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
+                getCurrentFactoryInspection().getInspectionComponents().clear();
+                getCurrentFactoryInspection().setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
 
                 updateFactoryInspection();
             }
@@ -209,7 +208,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         }
     }
-     
+
     public List<FactoryInspectionComponent> copyFactoryInspectionComponents(List<FactoryInspectionComponent> srcFactoryInspectionComponents) {
         ArrayList<FactoryInspectionComponent> newFactoryInspectionComponents = new ArrayList<>();
 
@@ -2655,15 +2654,23 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void doFactoryInspectionSearch() {
-//        if (factoryInspectionSearchText.trim().length() > 1) {
-//            if (getIsActiveManufacturersOnly()) {
-//                foundManufacturers = Manufacturer.findActiveManufacturersByAnyPartOfName(getEntityManager1(), factoryInspectionSearchText);
-//            } else {
-//                foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
-//            }
-//        } else {
-//            foundManufacturers = new ArrayList<>();
-//        }
-    }
+        //if (factoryInspectionSearchText.trim().length() > 1) {
+            //if (getIsActiveManufacturersOnly()) {
+            factoryInspections = FactoryInspection.findFactoryInspectionsByDateSearchField(
+                    getEntityManager1(),
+                    null,
+                    "General",
+                    factoryInspectionSearchText,
+                    null, null);
+            //} else {
+            //foundManufacturers = Manufacturer.findManufacturersByAnyPartOfName(getEntityManager(), manufacturerSearchText);
+            //}
+            //} else {
+            //foundManufacturers = new ArrayList<>();
+            //}
+        //} else {
+        //    factoryInspections = new ArrayList<>();
+        //}
 
+    }
 }
