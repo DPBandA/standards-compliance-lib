@@ -503,6 +503,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
             getCurrentFactoryInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
         }
+        
+        getCurrentFactoryInspection().setAddress(new Address());
+        getCurrentFactoryInspection().setFactoryRepresentative(new Contact());
     }
 
     public void retailOutletDialogReturn() {
