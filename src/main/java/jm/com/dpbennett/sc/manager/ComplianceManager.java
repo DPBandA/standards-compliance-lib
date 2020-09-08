@@ -130,6 +130,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getSystemManager().addSingleAuthenticationListener(this);
     }
 
+    public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
+        return currentFactoryInspectionComponent;
+    }
+
+    public void setCurrentFactoryInspectionComponent(FactoryInspectionComponent currentFactoryInspectionComponent) {
+        this.currentFactoryInspectionComponent = currentFactoryInspectionComponent;
+    }
+
     public void cancelFactoryInspectionComponentEdit() {
         currentFactoryInspectionComponent.setIsDirty(false);
     }
