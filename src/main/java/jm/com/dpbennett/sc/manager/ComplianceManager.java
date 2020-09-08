@@ -1225,6 +1225,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateFactoryInspection() {
         getCurrentFactoryInspection().setIsDirty(true);
     }
+    
+    public void updateFactoryInspectionComponent() {
+        getCurrentFactoryInspectionComponent().setIsDirty(true);
+    }
+
 
     public void updateEntryDocumentInspection() {
         getCurrentComplianceSurvey().getEntryDocumentInspection().setIsDirty(true);
