@@ -2471,6 +2471,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().getMainTabView().openTab("Market Products");
     }
+    
+     public void openFactoryInspectionBrowser() {
+
+        getSystemManager().getMainTabView().openTab("Factory Inspections");
+    }
 
     public void doMarketProductSearch() {
 
@@ -2664,6 +2669,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentFactoryInspection.setInspectionDate(new Date());
 
         editFactoryInspection();
+        
+        openFactoryInspectionBrowser();
     }
 
     public FactoryInspection getCurrentFactoryInspection() {
