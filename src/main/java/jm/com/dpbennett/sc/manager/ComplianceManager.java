@@ -1737,7 +1737,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void doDefaultSearch() {
 
         switch (getSystemManager().getDashboard().getSelectedTabId()) {
-            case "Survey Browser":
+            case "Standards Compliance":
                 doSurveySearch();
                 break;
             default:
