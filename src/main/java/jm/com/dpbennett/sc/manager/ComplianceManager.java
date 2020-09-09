@@ -511,7 +511,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         if (getHumanResourceManager().getSelectedManufacturer().getId() != null) {
             getCurrentFactoryInspection().setManufacturer(getHumanResourceManager().getSelectedManufacturer());
         }
-        
+
         getCurrentFactoryInspection().setAddress(new Address());
         getCurrentFactoryInspection().setFactoryRepresentative(new Contact());
     }
@@ -728,7 +728,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void editCurrentFactoryInspection() {
-       editFactoryInspection(); 
+        editFactoryInspection();
     }
 
     public Boolean getIsActiveMarketProductsOnly() {
@@ -1225,11 +1225,17 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateFactoryInspection() {
         getCurrentFactoryInspection().setIsDirty(true);
     }
-    
+
     public void updateFactoryInspectionComponent() {
         getCurrentFactoryInspectionComponent().setIsDirty(true);
     }
 
+    public void onFactoryInspectionComponentCellEdit(CellEditEvent event) {
+
+        getCurrentFactoryInspection().getAllSortedFactoryInspectionComponents()
+                .get(event.getRowIndex()).save(getEntityManager1());
+
+    }
 
     public void updateEntryDocumentInspection() {
         getCurrentComplianceSurvey().getEntryDocumentInspection().setIsDirty(true);
