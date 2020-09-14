@@ -1758,6 +1758,17 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openSurveysBrowser();
     }
+    
+    public void doNoDateSurveySearch() {
+        complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
+                getUser(),
+                dateSearchField,
+                "General",
+                surveySearchText,
+                null,
+                null,
+                false);
+    }
 
     public List<String> completeSearchText(String query) {
         List<String> suggestions = new ArrayList<>();
