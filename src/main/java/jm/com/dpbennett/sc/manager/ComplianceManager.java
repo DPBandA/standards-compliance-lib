@@ -60,6 +60,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
@@ -128,6 +129,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         reset();
 
         getSystemManager().addSingleAuthenticationListener(this);
+    }
+    
+    public void onMainViewTabChange(TabChangeEvent event) {
+        if (event.getTab().getTitle().equals("Manufacturers")) {
+            getHumanResourceManager().setManufacturersTableId(":mainTabViewForm:mainTabView:manufacturersTable");
+        }
+
     }
 
     public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
@@ -2417,7 +2425,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 //            getSystemManager().getMainTabView().openTab("Standard Browser");
 //            getSystemManager().getMainTabView().openTab("Complaint Browser");
 //            getSystemManager().getMainTabView().openTab("Market Products");
-//            getSystemManager().getMainTabView().openTab("Manufacturers");
+            getSystemManager().getMainTabView().openTab("Manufacturers");
             getSystemManager().getMainTabView().openTab("Factory Inspections");
         }
 
