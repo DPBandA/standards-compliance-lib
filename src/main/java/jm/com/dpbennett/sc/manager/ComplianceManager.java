@@ -832,6 +832,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().getMainTabView().openTab("Complaint Browser");
     }
+    
+    public void openManufacturerBrowser() {
+        getSystemManager().getMainTabView().openTab("Manufacturers");
+    }
 
     public HumanResourceManager getHumanResourceManager() {
 
@@ -2425,8 +2429,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 //            getSystemManager().getMainTabView().openTab("Standard Browser");
 //            getSystemManager().getMainTabView().openTab("Complaint Browser");
 //            getSystemManager().getMainTabView().openTab("Market Products");
-            getSystemManager().getMainTabView().openTab("Manufacturers");
-            getSystemManager().getMainTabView().openTab("Factory Inspections");
+//            getSystemManager().getMainTabView().openTab("Manufacturers");
+//            getSystemManager().getMainTabView().openTab("Factory Inspections");
         }
 
     }
