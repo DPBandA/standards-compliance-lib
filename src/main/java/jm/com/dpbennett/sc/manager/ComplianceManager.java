@@ -1225,6 +1225,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void editComplianceSurveyRetailOutlet() {
     }
+    
+    public void updateProductInspection() {
+        getCurrentProductInspection().setIsDirty(true);
+    }
 
     public void updateSurvey() {
         getCurrentComplianceSurvey().setIsDirty(true);
