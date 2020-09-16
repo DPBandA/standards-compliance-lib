@@ -1321,6 +1321,26 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openProductInspectionDialog();
     }
+    
+    public void createNewFactoryProductInspection() {
+        currentProductInspection = new ProductInspection();
+        currentProductInspection.setQuantity(0);
+        currentProductInspection.setSampleSize(0);
+
+        setEdit(false);
+
+        openFactoryProductInspectionDialog();
+    }
+    
+    public void openFactoryProductInspectionDialog() {
+        PrimeFacesUtils.openDialog(null, "/compliance/factoryProductInspectionDialog", true, true, true, true, 650, 800);
+    }
+    
+    public void editFactoryProductInspection() {
+        openFactoryProductInspectionDialog();
+
+        setEdit(true);
+    }
 
     public void createNewComplaintProductInspection() {
         currentProductInspection = new ProductInspection();
@@ -1584,6 +1604,20 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             System.out.println(e);
         }
     }
+    
+    public void okFactoryProductInspection() {
+        try {
+
+            if (getIsNewProductInspection()) {
+                currentFactoryInspection.getProductInspections().add(currentProductInspection);
+            }
+
+            PrimeFacesUtils.closeDialog(null);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 
     public void okComplaintProductInspection() {
         try {
@@ -1605,6 +1639,15 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentProductInspection = new ProductInspection();
 
         currentComplianceSurvey.setIsDirty(true);
+
+    }
+    
+    public void removeFactoryProductInspection(ActionEvent event) {
+
+        currentFactoryInspection.getProductInspections().remove(currentProductInspection);
+        currentProductInspection = new ProductInspection();
+
+        currentFactoryInspection.setIsDirty(true);
 
     }
 
