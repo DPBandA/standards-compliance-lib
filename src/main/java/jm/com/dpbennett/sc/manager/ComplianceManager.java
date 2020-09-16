@@ -836,7 +836,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void openManufacturerBrowser() {
         getSystemManager().getMainTabView().openTab("Manufacturers");
     }
-
+    
     public HumanResourceManager getHumanResourceManager() {
 
         return BeanUtils.findBean("humanResourceManager");
