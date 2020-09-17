@@ -2757,6 +2757,17 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void createNewFactoryInspection() {
         currentFactoryInspection = new FactoryInspection();
         currentFactoryInspection.setInspectionDate(new Date());
+        EntityManager em = getEntityManager1();
+
+        // Add the default inspections
+        FactoryInspection factoryInspection
+                = FactoryInspection.findFactoryInspectionByName(em, 
+                        (String) SystemOption.getOptionValueObject(em, "defaultFacInspTemplate"));
+
+        if (factoryInspection != null) {
+            currentFactoryInspection.getInspectionComponents().clear();
+            currentFactoryInspection.setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
+        }
 
         editFactoryInspection();
 
