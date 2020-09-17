@@ -2768,6 +2768,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentFactoryInspection.getInspectionComponents().clear();
             currentFactoryInspection.setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
         }
+        
+        currentFactoryInspection.setAssignedInspector(getUser().getEmployee());
 
         editFactoryInspection();
 
