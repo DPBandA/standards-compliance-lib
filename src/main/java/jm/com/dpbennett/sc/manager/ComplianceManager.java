@@ -130,7 +130,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public void onMainViewTabChange(TabChangeEvent event) {
         if (event.getTab().getTitle().equals("Manufacturers")) {
             getHumanResourceManager().setManufacturersTableId(":mainTabViewForm:mainTabView:manufacturersTable");
@@ -832,11 +832,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().getMainTabView().openTab("Complaint Browser");
     }
-    
+
     public void openManufacturerBrowser() {
         getSystemManager().getMainTabView().openTab("Manufacturers");
     }
-    
+
     public HumanResourceManager getHumanResourceManager() {
 
         return BeanUtils.findBean("humanResourceManager");
@@ -1225,9 +1225,21 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void editComplianceSurveyRetailOutlet() {
     }
-    
+
     public void updateProductInspection() {
         getCurrentProductInspection().setIsDirty(true);
+    }
+
+    public void updateFactoryProductInspection() {
+
+        if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
+            getCurrentProductInspection().setProductCategory(
+                    getCurrentProductInspection().getMarketProduct().getCategories().get(0).getName());
+        }
+        getCurrentProductInspection().setBrand(getCurrentProductInspection().getMarketProduct().getBrand());
+        getCurrentProductInspection().setModel(getCurrentProductInspection().getMarketProduct().getModel());
+
+        updateProductInspection();
     }
 
     public void updateSurvey() {
@@ -1325,7 +1337,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openProductInspectionDialog();
     }
-    
+
     public void createNewFactoryProductInspection() {
         currentProductInspection = new ProductInspection();
         currentProductInspection.setQuantity(0);
@@ -1335,11 +1347,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openFactoryProductInspectionDialog();
     }
-    
+
     public void openFactoryProductInspectionDialog() {
         PrimeFacesUtils.openDialog(null, "/compliance/factoryProductInspectionDialog", true, true, true, true, 650, 800);
     }
-    
+
     public void editFactoryProductInspection() {
         openFactoryProductInspectionDialog();
 
@@ -1586,7 +1598,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void cancelProductInspection() {
         currentProductInspection.setIsDirty(false);
-        
+
         PrimeFacesUtils.closeDialog(null);
     }
 
@@ -1603,7 +1615,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
             currentProductInspection.setInspector(getUser().getEmployee());
             currentComplianceSurvey.setInspector(getUser().getEmployee());
-            
+
             currentProductInspection.setIsDirty(true);
 
             PrimeFacesUtils.closeDialog(null);
@@ -1612,14 +1624,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             System.out.println(e);
         }
     }
-    
+
     public void okFactoryProductInspection() {
         try {
 
             if (getIsNewProductInspection()) {
                 currentFactoryInspection.getProductInspections().add(currentProductInspection);
             }
-            
+
             currentFactoryInspection.setIsDirty(true);
 
             PrimeFacesUtils.closeDialog(null);
@@ -1635,7 +1647,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             if (getIsNewProductInspection()) {
                 currentComplaint.getProductInspections().add(currentProductInspection);
             }
-            
+
             currentProductInspection.setIsDirty(true);
 
             PrimeFacesUtils.closeDialog(null);
@@ -1653,7 +1665,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentComplianceSurvey.setIsDirty(true);
 
     }
-    
+
     public void removeFactoryProductInspection(ActionEvent event) {
 
         currentFactoryInspection.getProductInspections().remove(currentProductInspection);
@@ -1825,14 +1837,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openSurveysBrowser();
     }
-    
+
     public void doDefaultSurveySearch() {
         complianceSurveys = ComplianceSurvey.findComplianceSurveysByDateSearchField(getEntityManager1(),
                 getUser(),
                 dateSearchField,
                 "General",
                 surveySearchText,
-           getDatePeriod().getStartDate(),
+                getDatePeriod().getStartDate(),
                 getDatePeriod().getEndDate(),
                 false);
     }
@@ -2549,8 +2561,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().getMainTabView().openTab("Market Products");
     }
-    
-     public void openFactoryInspectionBrowser() {
+
+    public void openFactoryInspectionBrowser() {
 
         getSystemManager().getMainTabView().openTab("Factory Inspections");
     }
@@ -2747,7 +2759,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         currentFactoryInspection.setInspectionDate(new Date());
 
         editFactoryInspection();
-        
+
         openFactoryInspectionBrowser();
     }
 
