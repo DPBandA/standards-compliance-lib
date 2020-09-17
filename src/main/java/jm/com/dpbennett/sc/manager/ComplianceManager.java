@@ -1585,6 +1585,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void cancelProductInspection() {
+        currentProductInspection.setIsDirty(false);
+        
         PrimeFacesUtils.closeDialog(null);
     }
 
@@ -1601,6 +1603,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
             currentProductInspection.setInspector(getUser().getEmployee());
             currentComplianceSurvey.setInspector(getUser().getEmployee());
+            
+            currentProductInspection.setIsDirty(true);
 
             PrimeFacesUtils.closeDialog(null);
 
@@ -1615,6 +1619,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             if (getIsNewProductInspection()) {
                 currentFactoryInspection.getProductInspections().add(currentProductInspection);
             }
+            
+            currentFactoryInspection.setIsDirty(true);
 
             PrimeFacesUtils.closeDialog(null);
 
@@ -1629,6 +1635,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             if (getIsNewProductInspection()) {
                 currentComplaint.getProductInspections().add(currentProductInspection);
             }
+            
+            currentProductInspection.setIsDirty(true);
 
             PrimeFacesUtils.closeDialog(null);
 
