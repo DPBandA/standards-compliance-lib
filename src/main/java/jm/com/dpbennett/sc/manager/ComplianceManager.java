@@ -1831,8 +1831,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 dateSearchField,
                 "General",
                 surveySearchText,
-                getDatePeriod().getStartDate(),
-                getDatePeriod().getEndDate(),
+                null, // getDatePeriod().getStartDate()
+                null, // getDatePeriod().getEndDate()
                 false);
 
         openSurveysBrowser();
@@ -1844,8 +1844,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 dateSearchField,
                 "General",
                 surveySearchText,
-                getDatePeriod().getStartDate(),
-                getDatePeriod().getEndDate(),
+                null, //getDatePeriod().getStartDate()
+                null, // getDatePeriod().getEndDate()
                 false);
     }
 
