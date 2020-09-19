@@ -2577,6 +2577,24 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     }
 
+    public ArrayList<String> completeMarketProduct(String query) {
+        EntityManager em;
+
+        try {
+            em = getEntityManager1();
+
+            ArrayList<MarketProduct> products = 
+                    new ArrayList<>(MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(em, query));
+            ArrayList<String> productsList = (ArrayList<String>) (ArrayList<?>) products;
+
+            return productsList;
+            
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        }
+    }
+
     public DocumentStandard getCurrentDocumentStandard() {
         return currentDocumentStandard;
     }
@@ -2761,14 +2779,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         // Add the default inspections
         FactoryInspection factoryInspection
-                = FactoryInspection.findFactoryInspectionByName(em, 
+                = FactoryInspection.findFactoryInspectionByName(em,
                         (String) SystemOption.getOptionValueObject(em, "defaultFacInspTemplate"));
 
         if (factoryInspection != null) {
             currentFactoryInspection.getInspectionComponents().clear();
             currentFactoryInspection.setInspectionComponents(copyFactoryInspectionComponents(factoryInspection.getInspectionComponents()));
         }
-        
+
         currentFactoryInspection.setAssignedInspector(getUser().getEmployee());
 
         editFactoryInspection();
