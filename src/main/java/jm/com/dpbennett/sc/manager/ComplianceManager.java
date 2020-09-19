@@ -1230,6 +1230,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getCurrentProductInspection().setIsDirty(true);
     }
 
+    public Boolean getRenderHeatNumber() {
+
+        return getCurrentProductInspection().getName().toUpperCase().contains("STEEL");
+    }
+
+    public Boolean getRenderCoilNumber() {
+
+        return getCurrentProductInspection().getName().toUpperCase().contains("COIL");
+    }
+
     public void updateFactoryProductInspection() {
 
         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
@@ -2583,12 +2593,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         try {
             em = getEntityManager1();
 
-            ArrayList<MarketProduct> products = 
-                    new ArrayList<>(MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(em, query));
+            ArrayList<MarketProduct> products
+                    = new ArrayList<>(MarketProduct.findActiveMarketProductsByAnyPartOfNameOrDescription(em, query));
             ArrayList<String> productsList = (ArrayList<String>) (ArrayList<?>) products;
 
             return productsList;
-            
+
         } catch (Exception e) {
             System.out.println(e);
             return new ArrayList<>();
