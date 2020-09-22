@@ -1901,14 +1901,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         PrimeFacesUtils.openDialog(null, "/compliance/complaintDialog", true, true, true, true, 650, 800);
     }
 
-    public Boolean getComplianceSurveyIsValid() {
+    public Boolean getComplianceSurveyIsValid() { // tk
 //        if (getCurrentComplianceSurvey().getId() != null) {
 //            return true;
 //        } else if (dirty) {
 //            return true;
 //        }
 
-        return false;
+       return true;
     }
 
     public Boolean getProductInspectionImageIsValid() {
