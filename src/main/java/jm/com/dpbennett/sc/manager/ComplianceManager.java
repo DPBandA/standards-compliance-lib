@@ -22,6 +22,7 @@ import javax.faces.model.SelectItem;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
+import jm.com.dpbennett.business.entity.cm.Client;
 import jm.com.dpbennett.business.entity.dm.DocumentStandard;
 import jm.com.dpbennett.business.entity.sm.Category;
 import jm.com.dpbennett.business.entity.hrm.Address;
@@ -1910,7 +1911,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 //            return true;
 //        }
 
-       return true;
+        return true;
     }
 
     public Boolean getProductInspectionImageIsValid() {
@@ -2042,7 +2043,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         parameters.put("products", getComplianceSurveySampledProductNamesQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
-        
+
         return getComplianceSurveyFormPDFFile(
                 em,
                 "portOfEntryReleaseRequestForm",
@@ -2071,7 +2072,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-        
+
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
@@ -2101,16 +2102,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-//        updateComplianceSurvey(em);
-
-        // full release
+        // Full release
         if (currentComplianceSurvey.getFullRelease()) {
             parameters.put("fullRelease", "\u2713");
         } else {
             parameters.put("fullRelease", "");
         }
 
-        // retailer, distributor, other?
+        // Retailer, distributor, other?
         if (currentComplianceSurvey.getRetailer()) {
             parameters.put("retailer", "\u2713");
         } else {
@@ -2130,35 +2129,35 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
         }
 
-        // broker
-        parameters.put("formId", currentComplianceSurvey.getId().longValue());
+        // Broker
+        parameters.put("formId", currentComplianceSurvey.getId());
         parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
                 + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
 
-        // consignee
+        // Consignee
         parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
 
-        // provisional release location 
+        // Provisional release location 
         parameters.put("specifiedReleaseLocationDomesticMarket", currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine1() + ", "
                 + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine2() + ", "
                 + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getCity() + ", "
                 + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getStateOrProvince());
 
-        // location of detained products locationOfDetainedProduct 
+        // Location of detained products locationOfDetainedProduct 
         parameters.put("locationOfDetainedProduct", currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine1() + ", "
                 + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine2() + ", "
                 + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getCity() + ", "
                 + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getStateOrProvince());
 
-        // consignee contact person
+        // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
 
-        // consignee tel/fax/email
+        // Consignee tel/fax/email
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
 
         parameters.put("products", getComplianceSurveyProductNames());
@@ -2173,6 +2172,51 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 "release_notice.pdf",
                 parameters,
                 "DOMESTIC_MARKET_DETENTION");
+    }
+    
+    public StreamedContent getApplicationForRehabilitationFile() {
+        EntityManager em = getEntityManager1();
+        HashMap parameters = new HashMap();
+
+
+        Client broker =  currentComplianceSurvey.getBroker();
+        Client consignee = currentComplianceSurvey.getConsignee();
+
+        // broker
+        parameters.put("formId", currentComplianceSurvey.getId());
+        parameters.put("brokerDetail", broker.getName() + "\n"
+                + broker.getBillingAddress().toString() + "\n"
+                + BusinessEntityUtils.getContactTelAndFax(broker.getMainContact()));
+
+        // consignee
+        parameters.put("consigneeDetail", consignee.getBillingAddress().toString());
+
+        // consignee contact person
+        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
+
+        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(consignee.getMainContact()));
+        parameters.put("products", getComplianceSurveyProductNames());
+        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+
+        // sample disposal
+        if (currentComplianceSurvey.getSamplesToBeCollected()) {
+            parameters.put("samplesToBeCollected", "\u2713"); // \u2713 is unicode for tick
+        } else {
+            parameters.put("samplesToBeCollected", "");
+        }
+        if (currentComplianceSurvey.getSamplesToBeDisposed()) {
+            parameters.put("samplesToBeDisposed", "\u2713");
+        } else {
+            parameters.put("samplesToBeDisposed", "");
+        }
+
+        return getComplianceSurveyFormPDFFile(
+                em,
+                "applicationForRehabilitationForm",
+                "appliacation_for_rehab.pdf",
+                parameters,
+                "PORT_OF_ENTRY_DETENTION");
     }
 
     public String getComplianceSurveyProductNames() {
@@ -2292,7 +2336,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 ////            currentComplianceSurvey = ComplianceSurvey.findComplianceSurveyById(em, currentComplianceSurvey.getId());
 ////        }
 //    }
-
     public StreamedContent getComplianceSurveyFormPDFFile(
             EntityManager em,
             String form,
@@ -2344,13 +2387,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                         }
                         //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
                     }
-                    
+
                     // Compile report
                     JasperReport jasperReport = JasperCompileManager.compileReport(reportFileURL);
 
                     // generate report
 //                    JasperPrint print = JasperFillManager.fillReport(reportFileURL, parameters, con);
-
                     // Generate report
                     JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
@@ -2428,67 +2470,66 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-//        updateComplianceSurvey(em);
-//
-//        // retailer, distributor, other?
-//        if (currentComplianceSurvey.getRetailer()) {
-//            parameters.put("retailer", "\u2713");
-//        } else {
-//            parameters.put("retailer", "");
-//        }
-//        if (currentComplianceSurvey.getDistributor()) {
-//            parameters.put("distributor", "\u2713");
-//        } else {
-//            parameters.put("distributor", "");
-//        }
-//        if (currentComplianceSurvey.getOtherCompanyTypes()) {
-//            parameters.put("otherCompanyTypes", "\u2713");
-//            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
-//        } else {
-//            parameters.put("otherCompanyTypes", "");
-//            currentComplianceSurvey.setCompanyTypes("");
-//            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
-//        }
-//
-//        // broker
-//        parameters.put("formId", currentComplianceSurvey.getId().longValue());
-//        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
-//                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
-//
-//        // consignee
-//        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
-//
-//        // provisional release location 
-//        parameters.put("specifiedReleaseLocationDomesticMarket", currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getCity() + ", "
-//                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getStateOrProvince());
-//
-//        // location of detained products locationOfDetainedProduct 
-//        parameters.put("locationOfDetainedProduct", currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine1() + ", "
-//                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine2() + ", "
-//                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getCity() + ", "
-//                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getStateOrProvince());
-//
-//        // consignee tel/fax/email
-//        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
-//
-//        parameters.put("products", getComplianceSurveyProductNames());
-//        parameters.put("productBrandNames", getComplianceSurveyProductBrandNames());
-//        parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
-//        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
-//        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
-//
-//        if (samplesTaken()) {
-//            parameters.put("samplesTaken", "\u2713");
-//        } else {
-//            parameters.put("samplesTaken", "");
-//        }
+        // Retailer, distributor, other?
+        if (currentComplianceSurvey.getRetailer()) {
+            parameters.put("retailer", "\u2713");
+        } else {
+            parameters.put("retailer", "");
+        }
+        if (currentComplianceSurvey.getDistributor()) {
+            parameters.put("distributor", "\u2713");
+        } else {
+            parameters.put("distributor", "");
+        }
+        if (currentComplianceSurvey.getOtherCompanyTypes()) {
+            parameters.put("otherCompanyTypes", "\u2713");
+            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
+        } else {
+            parameters.put("otherCompanyTypes", "");
+            currentComplianceSurvey.setCompanyTypes("");
+            parameters.put("companyTypes", currentComplianceSurvey.getCompanyTypes());
+        }
+
+        // Broker
+        parameters.put("formId", currentComplianceSurvey.getId());
+        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
+                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
+
+        // Consignee
+        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
+
+        // Provisional release location 
+        parameters.put("specifiedReleaseLocationDomesticMarket", currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine1() + ", "
+                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getAddressLine2() + ", "
+                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getCity() + ", "
+                + currentComplianceSurvey.getSpecifiedReleaseLocationDomesticMarket().getStateOrProvince());
+
+        // Location of detained products locationOfDetainedProduct 
+        parameters.put("locationOfDetainedProduct", currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine1() + ", "
+                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getAddressLine2() + ", "
+                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getCity() + ", "
+                + currentComplianceSurvey.getLocationOfDetainedProductDomesticMarket().getStateOrProvince());
+
+        // Consignee tel/fax/email
+        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
+
+        parameters.put("products", getComplianceSurveyProductNames());
+        parameters.put("productBrandNames", getComplianceSurveyProductBrandNames());
+        parameters.put("productBatchCodes", getComplianceSurveyProductBatchCodes());
+        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+
+        if (samplesTaken()) {
+            parameters.put("samplesTaken", "\u2713");
+        } else {
+            parameters.put("samplesTaken", "");
+        }
+
         return getComplianceSurveyFormPDFFile(
                 em,
                 "noticeOfDetentionForm",
