@@ -54,9 +54,11 @@ import static jm.com.dpbennett.sm.manager.SystemManager.getStringListAsSelectIte
 import jm.com.dpbennett.sm.util.BeanUtils;
 import jm.com.dpbennett.sm.util.PrimeFacesUtils;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
@@ -1983,34 +1985,34 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
-//
+
 //        updateComplianceSurvey(em);
-//        // set parameters
-//        parameters.put("formId", currentComplianceSurvey.getId().longValue());
-//
-//        // broker detail
-//        //Client broker = jm.getClientByName(em, currentComplianceSurvey.getBroker().getName());
-//        //Contact brokerRep = jm.getContactByName(em, username, username);
-//        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
-//                + currentComplianceSurvey.getBrokerRepresentative().getFirstName() + " "
-//                + currentComplianceSurvey.getBrokerRepresentative().getLastName() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getCity() + "\n"
-//                + currentComplianceSurvey.getBroker().getBillingAddress().getStateOrProvince());
-//
-//        //Consignee detail
-//        //Client consignee = jm.getClientByName(em, currentComplianceSurvey.getConsignee().getName());
-//        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getName() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince() + "\n"
-//                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getConsignee().getMainContact()));
-//
-//        parameters.put("products", getComplianceSurveyProductNames());
-//        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
-//        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+        // Set parameters
+        parameters.put("formId", currentComplianceSurvey.getId());
+
+        // Broker detail
+        //Client broker = jm.getClientByName(em, currentComplianceSurvey.getBroker().getName());
+        //Contact brokerRep = jm.getContactByName(em, username, username);
+        parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
+                + currentComplianceSurvey.getBrokerRepresentative().getFirstName() + " "
+                + currentComplianceSurvey.getBrokerRepresentative().getLastName() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getCity() + "\n"
+                + currentComplianceSurvey.getBroker().getBillingAddress().getStateOrProvince());
+
+        //Consignee detail
+        //Client consignee = jm.getClientByName(em, currentComplianceSurvey.getConsignee().getName());
+        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getName() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince() + "\n"
+                + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getConsignee().getMainContact()));
+
+        parameters.put("products", getComplianceSurveyProductNames());
+        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
 
         return getComplianceSurveyFormPDFFile(
                 em,
@@ -2058,7 +2060,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-        updateComplianceSurvey(em);
+//        updateComplianceSurvey(em);
 
         // broker
         parameters.put("formId", currentComplianceSurvey.getId().longValue());
@@ -2105,7 +2107,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-        updateComplianceSurvey(em);
+//        updateComplianceSurvey(em);
 
         // full release
         if (currentComplianceSurvey.getFullRelease()) {
@@ -2288,14 +2290,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     // tk use of this may have to be retired.
-    public void updateComplianceSurvey(EntityManager em) {
-//        if (dirty) {
-//            save();
-//        }
-//        if (currentComplianceSurvey.getId() != null) {
-//            currentComplianceSurvey = ComplianceSurvey.findComplianceSurveyById(em, currentComplianceSurvey.getId());
-//        }
-    }
+//    public void updateComplianceSurvey(EntityManager em) {
+////        if (dirty) {
+////            save();
+////        }
+////        if (currentComplianceSurvey.getId() != null) {
+////            currentComplianceSurvey = ComplianceSurvey.findComplianceSurveyById(em, currentComplianceSurvey.getId());
+////        }
+//    }
 
     public StreamedContent getComplianceSurveyFormPDFFile(
             EntityManager em,
@@ -2307,17 +2309,17 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         if (currentComplianceSurvey.getId() != null) {
             try {
                 Connection con = BusinessEntityUtils.establishConnection(
-                        "com.mysql.jdbc.Driver",
-                        "jdbc:mysql://boshrmapp:3306/jmtstest", // tk make system option
-                        "root", // tk make system option
-                        "bsj0001");  // tk make system option
+                        (String) SystemOption.getOptionValueObject(em, "defaultDatabaseDriver"),
+                        (String) SystemOption.getOptionValueObject(em, "defaultDatabaseURL"),
+                        (String) SystemOption.getOptionValueObject(em, "defaultDatabaseUsername"),
+                        (String) SystemOption.getOptionValueObject(em, "defaultDatabasePassword"));
                 if (con != null) {
                     StreamedContent streamContent;
 
                     String reportFileURL = (String) SystemOption.getOptionValueObject(em, form);
 
                     // make sure is parameter is set for all forms
-                    parameters.put("formId", currentComplianceSurvey.getId().longValue());
+                    parameters.put("formId", currentComplianceSurvey.getId());
 
                     // tk remove and do this when compliance survey is being saved
                     // get and set reference number if it is null
@@ -2329,7 +2331,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                                     setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
                                             + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
                             //setDirty(dirty);
-                            updateComplianceSurvey(em);
+//                            updateComplianceSurvey(em);
                             em.getTransaction().commit();
 
                         }
@@ -2342,15 +2344,21 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                                     setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
                                             + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
                             //setDirty(dirty);
-                            updateComplianceSurvey(em);
+//                            updateComplianceSurvey(em);
                             em.getTransaction().commit();
 
                         }
                         //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
                     }
+                    
+                    // Compile report
+                    JasperReport jasperReport = JasperCompileManager.compileReport(reportFileURL);
 
                     // generate report
-                    JasperPrint print = JasperFillManager.fillReport(reportFileURL, parameters, con);
+//                    JasperPrint print = JasperFillManager.fillReport(reportFileURL, parameters, con);
+
+                    // Generate report
+                    JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, con);
 
                     byte[] fileBytes = JasperExportManager.exportReportToPdf(print);
 
@@ -2363,7 +2371,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 }
             } catch (JRException e) {
                 System.out.println(e);
-                setLongProcessProgress(100);
 
                 return null;
             }
