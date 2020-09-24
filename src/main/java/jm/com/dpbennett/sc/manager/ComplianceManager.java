@@ -2027,32 +2027,28 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-//        updateComplianceSurvey(em);
-//
-//        // specified release location               
-//        parameters.put("specifiedReleaseLocation", currentComplianceSurvey.getSpecifiedReleaseLocation().getName() + "\n"
-//                + currentComplianceSurvey.getSpecifiedReleaseLocation().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getSpecifiedReleaseLocation().getAddressLine2() + "\n"
-//                + currentComplianceSurvey.getSpecifiedReleaseLocation().getCity() + "\n"
-//                + currentComplianceSurvey.getSpecifiedReleaseLocation().getStateOrProvince());
-//
-//        // consignee
-//        // Client consignee = jm.getClientByName(em, currentComplianceSurvey.getConsignee().getName());
-//        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getName() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + "\n"
-//                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
-//
-//        parameters.put("products", getComplianceSurveySampledProductNamesQuantitiesAndUnits());
-//        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+        // Specified release location               
+        parameters.put("specifiedReleaseLocation", currentComplianceSurvey.getSpecifiedReleaseLocation().getName() + "\n"
+                + currentComplianceSurvey.getSpecifiedReleaseLocation().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getSpecifiedReleaseLocation().getAddressLine2() + "\n"
+                + currentComplianceSurvey.getSpecifiedReleaseLocation().getCity() + "\n"
+                + currentComplianceSurvey.getSpecifiedReleaseLocation().getStateOrProvince());
+
+        parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getName() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + "\n"
+                + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
+
+        parameters.put("products", getComplianceSurveySampledProductNamesQuantitiesAndUnits());
+        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+        
         return getComplianceSurveyFormPDFFile(
                 em,
                 "portOfEntryReleaseRequestForm",
                 "release_request.pdf",
                 parameters,
                 "PORT_OF_ENTRY_DETENTION");
-
     }
 
     public StreamedContent getSampleRequestFile() {
@@ -2060,24 +2056,22 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-//        updateComplianceSurvey(em);
-
-        // broker
-        parameters.put("formId", currentComplianceSurvey.getId().longValue());
+        // Broker
+        parameters.put("formId", currentComplianceSurvey.getId());
         parameters.put("brokerDetail", currentComplianceSurvey.getBroker().getName() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine1() + "\n"
                 + currentComplianceSurvey.getBroker().getBillingAddress().getAddressLine2() + "\n"
                 + BusinessEntityUtils.getContactTelAndFax(currentComplianceSurvey.getBroker().getMainContact()));
 
-        // consignee
+        // Consignee
         parameters.put("consigneeDetail", currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine1() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getAddressLine2() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getCity() + ", "
                 + currentComplianceSurvey.getConsignee().getBillingAddress().getStateOrProvince());
 
-        // consignee contact person
+        // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
-
+        
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(currentComplianceSurvey.getConsignee().getMainContact()));
         parameters.put("products", getComplianceSurveyProductNames());
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
