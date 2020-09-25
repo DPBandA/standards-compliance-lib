@@ -2182,16 +2182,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         Client broker =  currentComplianceSurvey.getBroker();
         Client consignee = currentComplianceSurvey.getConsignee();
 
-        // broker
+        // Broker
         parameters.put("formId", currentComplianceSurvey.getId());
         parameters.put("brokerDetail", broker.getName() + "\n"
                 + broker.getBillingAddress().toString() + "\n"
                 + BusinessEntityUtils.getContactTelAndFax(broker.getMainContact()));
 
-        // consignee
+        // Consignee
         parameters.put("consigneeDetail", consignee.getBillingAddress().toString());
 
-        // consignee contact person
+        // Consignee contact person
         parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
 
         parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(consignee.getMainContact()));
@@ -2199,9 +2199,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
         parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
 
-        // sample disposal
+        // Sample disposal
         if (currentComplianceSurvey.getSamplesToBeCollected()) {
-            parameters.put("samplesToBeCollected", "\u2713"); // \u2713 is unicode for tick
+            parameters.put("samplesToBeCollected", "\u2713");
         } else {
             parameters.put("samplesToBeCollected", "");
         }
