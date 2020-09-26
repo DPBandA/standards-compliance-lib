@@ -1284,30 +1284,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         updateSurvey();
     }
 
-//    public void updateContainerNumber() {
-//        // create/save shipping containers if needed
-//        // save current list of containers for later use       
-//        List<ShippingContainer> currentShippingContainers = new ArrayList<>();
-//        for (ShippingContainer shippingContainer : getCurrentComplianceSurvey().getEntryDocumentInspection().getShippingContainers()) {
-//            currentShippingContainers.add(shippingContainer);
-//        }
-//
-//        getCurrentComplianceSurvey().getEntryDocumentInspection().getShippingContainers().clear();
-//
-//        List<String> numList = getCurrentComplianceSurvey().getEntryDocumentInspection().getContainerNumberList();
-//        for (String containerNum : numList) {
-//            if (!containerNum.trim().equals("")) {
-//                ShippingContainer sc = getCurrentShippingContainerByNumber(currentShippingContainers, containerNum);
-//                if (sc == null) {
-//                    getCurrentComplianceSurvey().getEntryDocumentInspection().getShippingContainers().add(new ShippingContainer(containerNum));
-//                } else {
-//                    getCurrentComplianceSurvey().getEntryDocumentInspection().getShippingContainers().add(sc);
-//                }
-//            }
-//        }
-//
-//        //setDirty(true);
-//    }
     public ShippingContainer getCurrentShippingContainerByNumber(List<ShippingContainer> shippingContainers, String number) {
         for (ShippingContainer shippingContainer : shippingContainers) {
             if (shippingContainer.getNumber().trim().equals(number.trim())) {
