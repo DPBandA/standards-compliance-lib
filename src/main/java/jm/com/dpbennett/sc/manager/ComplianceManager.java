@@ -133,7 +133,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-
+    
     public void onMainViewTabChange(TabChangeEvent event) {
         if (event.getTab().getTitle().equals("Manufacturers")) {
             getHumanResourceManager().setManufacturersTableId(":mainTabViewForm:mainTabView:manufacturersTable");
@@ -2193,6 +2193,51 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 "appliacation_for_rehab.pdf",
                 parameters,
                 "PORT_OF_ENTRY_DETENTION");
+    }
+    
+    public StreamedContent getVerificationReportFile() {
+        EntityManager em = getEntityManager1();
+        HashMap parameters = new HashMap();
+
+
+        Client broker =  currentComplianceSurvey.getBroker();
+        Client consignee = currentComplianceSurvey.getConsignee();
+
+        // Broker
+//        parameters.put("formId", currentComplianceSurvey.getId());
+//        parameters.put("brokerDetail", broker.getName() + "\n"
+//                + broker.getBillingAddress().toString() + "\n"
+//                + BusinessEntityUtils.getContactTelAndFax(broker.getMainContact()));
+//
+//        // Consignee
+//        parameters.put("consigneeDetail", consignee.getBillingAddress().toString());
+//
+//        // Consignee contact person
+//        parameters.put("consigneeContactPerson", BusinessEntityUtils.getContactFullName(currentComplianceSurvey.getConsigneeRepresentative()));
+//
+//        parameters.put("consigneeTelFaxEmail", BusinessEntityUtils.getMainTelFaxEmail(consignee.getMainContact()));
+//        parameters.put("products", getComplianceSurveyProductNames());
+//        parameters.put("quantity", getComplianceSurveyProductQuantitiesAndUnits());
+//        parameters.put("numberOfSamplesTaken", getComplianceSurveyProductTotalSampleSize());
+//
+//        // Sample disposal
+//        if (currentComplianceSurvey.getSamplesToBeCollected()) {
+//            parameters.put("samplesToBeCollected", "\u2713");
+//        } else {
+//            parameters.put("samplesToBeCollected", "");
+//        }
+//        if (currentComplianceSurvey.getSamplesToBeDisposed()) {
+//            parameters.put("samplesToBeDisposed", "\u2713");
+//        } else {
+//            parameters.put("samplesToBeDisposed", "");
+//        }
+
+        return getComplianceSurveyFormPDFFile(
+                em,
+                "applicationForRehabilitationForm", // edit tk
+                "appliacation_for_rehab.pdf", // edit tk
+                parameters,
+                "PORT_OF_ENTRY_DETENTION"); // edit tk
     }
 
     public String getComplianceSurveyProductNames() {
