@@ -2234,10 +2234,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         return getComplianceSurveyFormPDFFile(
                 em,
-                "applicationForRehabilitationForm", // edit tk
-                "appliacation_for_rehab.pdf", // edit tk
+                "verificationReportForm",
+                "verification_report.pdf",
                 parameters,
-                "PORT_OF_ENTRY_DETENTION"); // edit tk
+                "VERIFICATION_REPORT"); // edit tk
     }
 
     public String getComplianceSurveyProductNames() {
@@ -2348,15 +2348,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         return totalSampleSize.toString();
     }
 
-    // tk use of this may have to be retired.
-//    public void updateComplianceSurvey(EntityManager em) {
-////        if (dirty) {
-////            save();
-////        }
-////        if (currentComplianceSurvey.getId() != null) {
-////            currentComplianceSurvey = ComplianceSurvey.findComplianceSurveyById(em, currentComplianceSurvey.getId());
-////        }
-//    }
     public StreamedContent getComplianceSurveyFormPDFFile(
             EntityManager em,
             String form,
