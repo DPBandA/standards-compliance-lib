@@ -806,7 +806,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void editFactoryInspection() {
-        PrimeFacesUtils.openDialog(null, "/compliance/factoryInspectionDialog", true, true, true, true, 650, 800);
+        PrimeFacesUtils.openDialog(null, "/compliance/factoryInspectionDialog", true, true, true, true, 650, 900);
     }
 
     public void openProductInspectionDialog() {
@@ -1386,7 +1386,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void updateManufacturer() {
-
+        
         currentFactoryInspection.setAddress(new Address());
         currentFactoryInspection.setFactoryRepresentative(new Contact());
 
@@ -2839,6 +2839,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void createNewFactoryInspection() {
         currentFactoryInspection = new FactoryInspection();
         currentFactoryInspection.setInspectionDate(new Date());
+        currentFactoryInspection.setWorkProgress("Completed");
         EntityManager em = getEntityManager1();
 
         // Add the default inspections
