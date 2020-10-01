@@ -133,7 +133,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public void onMainViewTabChange(TabChangeEvent event) {
         if (event.getTab().getTitle().equals("Manufacturers")) {
             getHumanResourceManager().setManufacturersTableId(":mainTabViewForm:mainTabView:manufacturersTable");
@@ -525,6 +525,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getCurrentFactoryInspection().setAddress(new Address());
         getCurrentFactoryInspection().setFactoryRepresentative(new Contact());
+    }
+
+    public void factoryInspectionComponentDialogReturn() {
+        if (getCurrentFactoryInspectionComponent().getIsDirty()) {
+            updateFactoryInspection();
+        }
     }
 
     public void retailOutletDialogReturn() {
@@ -1386,7 +1392,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void updateManufacturer() {
-        
+
         currentFactoryInspection.setAddress(new Address());
         currentFactoryInspection.setFactoryRepresentative(new Contact());
 
@@ -2149,13 +2155,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 parameters,
                 "DOMESTIC_MARKET_DETENTION");
     }
-    
+
     public StreamedContent getApplicationForRehabilitationFile() {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-
-        Client broker =  currentComplianceSurvey.getBroker();
+        Client broker = currentComplianceSurvey.getBroker();
         Client consignee = currentComplianceSurvey.getConsignee();
 
         // Broker
@@ -2194,13 +2199,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 parameters,
                 "PORT_OF_ENTRY_DETENTION");
     }
-    
+
     public StreamedContent getVerificationReportFile() {
         EntityManager em = getEntityManager1();
         HashMap parameters = new HashMap();
 
-
-        Client broker =  currentComplianceSurvey.getBroker();
+        Client broker = currentComplianceSurvey.getBroker();
         Client consignee = currentComplianceSurvey.getConsignee();
 
         // Broker
@@ -2231,7 +2235,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 //        } else {
 //            parameters.put("samplesToBeDisposed", "");
 //        }
-
         return getComplianceSurveyFormPDFFile(
                 em,
                 "verificationReportForm",
