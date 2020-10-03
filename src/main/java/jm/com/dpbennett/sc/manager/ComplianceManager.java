@@ -527,12 +527,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getCurrentFactoryInspection().setFactoryRepresentative(new Contact());
     }
 
-    public void factoryInspectionComponentDialogReturn() {
-        if (getCurrentFactoryInspectionComponent().getIsDirty()) {
-            updateFactoryInspection();
-        }
-    }
-
     public void retailOutletDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplianceSurvey().setRetailOutlet(getClientManager().getSelectedClient());
@@ -1275,12 +1269,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void updateFactoryInspectionComponent() {
         getCurrentFactoryInspectionComponent().setIsDirty(true);
+
+        updateFactoryInspection();
     }
 
     public void onFactoryInspectionComponentCellEdit(CellEditEvent event) {
 
         getCurrentFactoryInspection().getAllSortedFactoryInspectionComponents()
-                .get(event.getRowIndex()).save(getEntityManager1());
+                .get(event.getRowIndex()).setIsDirty(true);
+
+        updateFactoryInspection();
 
     }
 
