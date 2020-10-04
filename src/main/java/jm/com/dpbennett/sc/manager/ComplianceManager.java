@@ -135,10 +135,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
-        if (event.getTab().getTitle().equals("Manufacturers")) {
-            getHumanResourceManager().setManufacturersTableId(":mainTabViewForm:mainTabView:manufacturersTable");
-        }
-
+        
     }
 
     public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
