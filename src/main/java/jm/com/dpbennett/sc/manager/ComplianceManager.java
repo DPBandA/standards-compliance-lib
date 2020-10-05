@@ -135,7 +135,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
-        
+
     }
 
     public FactoryInspectionComponent getCurrentFactoryInspectionComponent() {
@@ -853,6 +853,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void complaintDialogReturn() {
         doComplaintSearch();
+    }
+
+    public void factoryProductInspectionDialogReturn() {
+        if (getCurrentProductInspection().getIsDirty()) {
+            updateFactoryInspection();
+        }
     }
 
     public void updateDatePeriodSearch() {
@@ -1622,8 +1628,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 currentFactoryInspection.getProductInspections().add(currentProductInspection);
             }
 
-            currentFactoryInspection.setIsDirty(true);
-
+            //currentFactoryInspection.setIsDirty(true);
             PrimeFacesUtils.closeDialog(null);
 
         } catch (Exception e) {
@@ -2867,6 +2872,15 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void setCurrentFactoryInspection(FactoryInspection currentFactoryInspection) {
         this.currentFactoryInspection = currentFactoryInspection;
     }
+    
+    public void factoryInspectionDialogReturn() {
+        if (currentFactoryInspection.getIsDirty()) {
+            PrimeFacesUtils.addMessage("Factory inspection was NOT saved", 
+                    "The recently edited factory inspection was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("headerForm:growl3");            
+        }
+    }
+            
 
     public void doFactoryInspectionSearch() {
 
