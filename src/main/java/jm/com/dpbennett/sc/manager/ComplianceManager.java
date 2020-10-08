@@ -2619,6 +2619,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openMarketProductBrowser();
     }
+    
+    public void createNewMarketProductInDialog() {
+        currentMarketProduct = new MarketProduct();
+
+        openMarketProductDialog();
+    }
 
     public void openMarketProductDialog() {
         PrimeFacesUtils.openDialog(null, "/compliance/marketProductDialog", true, true, true, true, 650, 800);
