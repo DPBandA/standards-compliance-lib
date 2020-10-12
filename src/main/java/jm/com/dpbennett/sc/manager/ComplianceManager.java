@@ -141,7 +141,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
     
     public Boolean getIsSurveyMarketProductNameValid() {
-        return BusinessEntityUtils.validateName(currentProductInspection.getMarketProduct().getName());
+        return BusinessEntityUtils.validateName(
+                getCurrentProductInspection().getMarketProduct().getName());
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
@@ -1242,9 +1243,26 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void editComplianceSurveyRetailOutlet() {
     }
 
-    public void updateProductInspection() {
+    public void updateMarketProductForProductInspection() {   
+        
+        // Update category, brand etc from market product field.
+        if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
+            getCurrentProductInspection().setProductCategory(
+                    getCurrentProductInspection().getMarketProduct().getCategories().
+                            get(0).getName());
+        }
+        getCurrentProductInspection().setBrand(
+                getCurrentProductInspection().getMarketProduct().getBrand());
+        getCurrentProductInspection().setModel(
+                getCurrentProductInspection().getMarketProduct().getModel());
+        
         getCurrentProductInspection().setIsDirty(true);
-    }
+    }   
+    
+    public void updateProductInspection() {        
+        
+        getCurrentProductInspection().setIsDirty(true);
+    }   
 
     public Boolean getRenderHeatNumber() {
 
