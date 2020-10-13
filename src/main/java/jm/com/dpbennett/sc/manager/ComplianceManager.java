@@ -134,13 +134,18 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getSystemManager().addSingleAuthenticationListener(this);
     }
     
-    public void editSurveyMarketProduct() {
+    public void editMarketProduct() {
         setCurrentMarketProduct(getCurrentProductInspection().getMarketProduct());
         
         openMarketProductDialog();
     }
     
     public Boolean getIsSurveyMarketProductNameValid() {
+        return BusinessEntityUtils.validateName(
+                getCurrentProductInspection().getMarketProduct().getName());
+    }
+    
+    public Boolean getIsComplaintMarketProductNameValid() {
         return BusinessEntityUtils.validateName(
                 getCurrentProductInspection().getMarketProduct().getName());
     }
