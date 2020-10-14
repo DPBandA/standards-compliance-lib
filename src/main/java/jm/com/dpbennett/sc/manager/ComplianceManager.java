@@ -133,21 +133,46 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         getSystemManager().addSingleAuthenticationListener(this);
     }
-    
+
     public void editMarketProduct() {
         setCurrentMarketProduct(getCurrentProductInspection().getMarketProduct());
-        
+
         openMarketProductDialog();
     }
-    
+
     public Boolean getIsSurveyMarketProductNameValid() {
         return BusinessEntityUtils.validateName(
                 getCurrentProductInspection().getMarketProduct().getName());
     }
-    
-    public Boolean getIsComplaintMarketProductNameValid() {
+
+    public Boolean getIsMarketProductNameValid() {
         return BusinessEntityUtils.validateName(
                 getCurrentProductInspection().getMarketProduct().getName());
+    }
+
+    public Boolean getIsMarketProductCategoryNameValid() {
+        return BusinessEntityUtils.validateName(
+                getCurrentProductInspection().getProductCategory().getName());
+    }
+
+    public void createNewMarketProductCategory() {
+        getSystemManager().setSelectedCategory(new Category());
+        getSystemManager().getSelectedCategory().setType("Product");
+
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
+    }
+
+    public void createNewMarketProductCategoryDialogReturn() {
+        if (getSystemManager().getSelectedCategory().getId() != null) {
+            getCurrentProductInspection().setProductCategory(getSystemManager().getSelectedCategory());
+        }
+    }
+
+    public void editMarketProductCategory() {
+        getSystemManager().setSelectedCategory(
+                getCurrentProductInspection().getProductCategory());
+
+        PrimeFacesUtils.openDialog(null, "/admin/categoryDialog", true, true, true, 175, 400);
     }
 
     public void onMainViewTabChange(TabChangeEvent event) {
@@ -1248,8 +1273,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void editComplianceSurveyRetailOutlet() {
     }
 
-    public void updateMarketProductForProductInspection() {   
-        
+    public void updateMarketProductForProductInspection() {
+
         // Update category, brand etc from market product field.
         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
             getCurrentProductInspection().setProductCategory(
@@ -1260,14 +1285,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 getCurrentProductInspection().getMarketProduct().getBrand());
         getCurrentProductInspection().setModel(
                 getCurrentProductInspection().getMarketProduct().getModel());
-        
+
         getCurrentProductInspection().setIsDirty(true);
-    }   
-    
-    public void updateProductInspection() {        
-        
+    }
+
+    public void updateProductInspection() {
+
         getCurrentProductInspection().setIsDirty(true);
-    }   
+    }
 
     public Boolean getRenderHeatNumber() {
 
@@ -2652,7 +2677,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openMarketProductBrowser();
     }
-    
+
     public void createNewMarketProductInDialog() {
         currentMarketProduct = new MarketProduct();
 
@@ -2911,15 +2936,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void setCurrentFactoryInspection(FactoryInspection currentFactoryInspection) {
         this.currentFactoryInspection = currentFactoryInspection;
     }
-    
+
     public void factoryInspectionDialogReturn() {
         if (currentFactoryInspection.getIsDirty()) {
-            PrimeFacesUtils.addMessage("Factory inspection was NOT saved", 
+            PrimeFacesUtils.addMessage("Factory inspection was NOT saved",
                     "The recently edited factory inspection was not saved", FacesMessage.SEVERITY_WARN);
-            PrimeFaces.current().ajax().update("headerForm:growl3");            
+            PrimeFaces.current().ajax().update("headerForm:growl3");
         }
     }
-            
 
     public void doFactoryInspectionSearch() {
 
