@@ -1254,7 +1254,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
             getCurrentProductInspection().setProductCategory(
                     getCurrentProductInspection().getMarketProduct().getCategories().
-                            get(0).getName());
+                            get(0));
         }
         getCurrentProductInspection().setBrand(
                 getCurrentProductInspection().getMarketProduct().getBrand());
@@ -1283,7 +1283,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
             getCurrentProductInspection().setProductCategory(
-                    getCurrentProductInspection().getMarketProduct().getCategories().get(0).getName());
+                    getCurrentProductInspection().getMarketProduct().getCategories().get(0));
         }
         getCurrentProductInspection().setBrand(getCurrentProductInspection().getMarketProduct().getBrand());
         getCurrentProductInspection().setModel(getCurrentProductInspection().getMarketProduct().getModel());
