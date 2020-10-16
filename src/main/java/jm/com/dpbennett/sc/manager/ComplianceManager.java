@@ -1291,12 +1291,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public Boolean getRenderHeatNumber() {
 
-        return getCurrentProductInspection().getName().toUpperCase().contains("STEEL");
+        return getCurrentProductInspection().getMarketProduct().getName().toUpperCase().contains("STEEL");
     }
 
     public Boolean getRenderCoilNumber() {
 
-        return getCurrentProductInspection().getName().toUpperCase().contains("COIL");
+        return getCurrentProductInspection().getMarketProduct().getName().toUpperCase().contains("COIL");
     }
 
     public void updateFactoryProductInspection() {
