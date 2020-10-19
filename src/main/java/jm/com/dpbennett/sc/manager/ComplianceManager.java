@@ -2438,15 +2438,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
                     // tk remove and do this when compliance survey is being saved
                     // get and set reference number if it is null
+                    /*
                     if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
                         if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
                             em.getTransaction().begin();
+                            
                             int year = BusinessEntityUtils.getCurrentYear();
                             currentComplianceSurvey. // tk BSJ-D42- to be made option?
                                     setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
                                             + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
-                            //setDirty(dirty);
-//                            updateComplianceSurvey(em);
+                            
                             em.getTransaction().commit();
 
                         }
@@ -2454,18 +2455,18 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                     } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
                         if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
                             em.getTransaction().begin();
+                            
                             int year = BusinessEntityUtils.getCurrentYear();
                             currentComplianceSurvey. // tk BSJ-D42- to be made option?
                                     setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
                                             + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
-                            //setDirty(dirty);
-//                            updateComplianceSurvey(em);
+                           
                             em.getTransaction().commit();
 
                         }
                         //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
                     }
-
+                    */
                     // Compile report
                     JasperReport jasperReport = JasperCompileManager.compileReport(reportFileURL);
 
