@@ -527,6 +527,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
     }
 
+    public void complaintProductInspectionDialogReturn() {
+       getCurrentComplaint().setIsDirty(getCurrentProductInspection().getIsDirty());
+    }
+
     public void receivedViaDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
             getCurrentComplaint().setReceivedVia(getClientManager().getSelectedClient());
@@ -889,6 +893,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void complaintDialogReturn() {
         doComplaintSearch();
+
+        if (currentComplaint.getIsDirty()) {
+            PrimeFacesUtils.addMessage("Complaint was NOT saved",
+                    "The recently edited complaint was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("headerForm:growl3");
+        }
     }
 
     public void factoryProductInspectionDialogReturn() {
