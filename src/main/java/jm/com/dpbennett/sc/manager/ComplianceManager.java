@@ -1364,7 +1364,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         return null;
     }
 
-    public void updateDateOfDetention() {
+    public void updatePOEDetention() {
+        if (getCurrentComplianceSurvey().getRequestForDetentionIssuedForPortOfEntry()) {
+            generateSequentialNumber("PORT_OF_ENTRY_DETENTION");
+        }
+
         getCurrentComplianceSurvey().setDateOfDetention(new Date());
 
         updateSurvey();
@@ -2415,34 +2419,32 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void generateSequentialNumber(String sequentialNumberName) {
-        
+
         EntityManager em = getEntityManager1();
 
         if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
-            if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
-                em.getTransaction().begin();
+            //if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
+            em.getTransaction().begin();
 
-                int year = BusinessEntityUtils.getCurrentYear();
-                currentComplianceSurvey. // tk BSJ-D42- to be made option?
-                        setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
-                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+            int year = BusinessEntityUtils.getCurrentYear();
+            currentComplianceSurvey. // tk BSJ-D42- to be made option?
+                    setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
+                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
-                em.getTransaction().commit();
-
-            }
+            em.getTransaction().commit();
+            //}
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
-            if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
-                em.getTransaction().begin();
+            //if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
+            em.getTransaction().begin();
 
-                int year = BusinessEntityUtils.getCurrentYear();
-                currentComplianceSurvey. // tk BSJ-D42- to be made option?
-                        setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
-                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+            int year = BusinessEntityUtils.getCurrentYear();
+            currentComplianceSurvey. // tk BSJ-DM42- to be made option?
+                    setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
+                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
-                em.getTransaction().commit();
-
-            }
+            em.getTransaction().commit();
+            //}
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         }
 
