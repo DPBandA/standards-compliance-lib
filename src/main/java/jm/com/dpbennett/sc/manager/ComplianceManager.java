@@ -528,7 +528,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void complaintProductInspectionDialogReturn() {
-       getCurrentComplaint().setIsDirty(getCurrentProductInspection().getIsDirty());
+        getCurrentComplaint().setIsDirty(getCurrentProductInspection().getIsDirty());
     }
 
     public void receivedViaDialogReturn() {
@@ -2414,6 +2414,40 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         return totalSampleSize.toString();
     }
 
+    public void generateSequentialNumber(String sequentialNumberName) {
+        
+        EntityManager em = getEntityManager1();
+
+        if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
+            if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
+                em.getTransaction().begin();
+
+                int year = BusinessEntityUtils.getCurrentYear();
+                currentComplianceSurvey. // tk BSJ-D42- to be made option?
+                        setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
+                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+
+                em.getTransaction().commit();
+
+            }
+            //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
+        } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
+            if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
+                em.getTransaction().begin();
+
+                int year = BusinessEntityUtils.getCurrentYear();
+                currentComplianceSurvey. // tk BSJ-D42- to be made option?
+                        setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
+                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+
+                em.getTransaction().commit();
+
+            }
+            //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
+        }
+
+    }
+
     public StreamedContent getComplianceSurveyFormPDFFile(
             EntityManager em,
             String form,
@@ -2436,37 +2470,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                     // make sure is parameter is set for all forms
                     parameters.put("formId", currentComplianceSurvey.getId());
 
-                    // tk remove and do this when compliance survey is being saved
-                    // get and set reference number if it is null
-                    /*
-                    if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
-                        if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
-                            em.getTransaction().begin();
-                            
-                            int year = BusinessEntityUtils.getCurrentYear();
-                            currentComplianceSurvey. // tk BSJ-D42- to be made option?
-                                    setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
-                                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
-                            
-                            em.getTransaction().commit();
-
-                        }
-                        //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
-                    } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
-                        if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
-                            em.getTransaction().begin();
-                            
-                            int year = BusinessEntityUtils.getCurrentYear();
-                            currentComplianceSurvey. // tk BSJ-D42- to be made option?
-                                    setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
-                                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
-                           
-                            em.getTransaction().commit();
-
-                        }
-                        //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
-                    }
-                    */
                     // Compile report
                     JasperReport jasperReport = JasperCompileManager.compileReport(reportFileURL);
 
