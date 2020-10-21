@@ -1373,6 +1373,16 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         updateSurvey();
     }
+    
+    public void updateDMDetention() {
+        if (getCurrentComplianceSurvey().getNoticeOfDetentionIssuedForDomesticMarket()) {
+            generateSequentialNumber("DOMESTIC_MARKET_DETENTION");
+        }
+
+        //getCurrentComplianceSurvey().setDateOfDetention(new Date());
+
+        updateSurvey();
+    }
 
     public void updateDailyReportStartDate() {
         currentComplianceDailyReport.setEndOfPeriod(currentComplianceDailyReport.getStartOfPeriod());
