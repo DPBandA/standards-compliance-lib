@@ -879,6 +879,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void surveyDialogReturn() {
         doSurveySearch();
+        
+        if (currentComplianceSurvey.getIsDirty()) {
+            PrimeFacesUtils.addMessage("Survey was NOT saved",
+                    "The recently edited survey was not saved", FacesMessage.SEVERITY_WARN);
+            PrimeFaces.current().ajax().update("headerForm:growl3");
+        }        
     }
 
     public void complaintDialogReturn() {
