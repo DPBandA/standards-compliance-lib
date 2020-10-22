@@ -1373,14 +1373,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         updateSurvey();
     }
-    
+
     public void updateDMDetention() {
         if (getCurrentComplianceSurvey().getNoticeOfDetentionIssuedForDomesticMarket()) {
             generateSequentialNumber("DOMESTIC_MARKET_DETENTION");
         }
 
         //getCurrentComplianceSurvey().setDateOfDetention(new Date());
-
         updateSurvey();
     }
 
@@ -2078,8 +2077,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "portOfEntryDetentionRequestForm",
                 "detention_request.pdf",
-                parameters,
-                "PORT_OF_ENTRY_DETENTION");
+                parameters);
     }
 
     public StreamedContent getReleaseRequestForPortOfEntryFile() {
@@ -2107,8 +2105,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "portOfEntryReleaseRequestForm",
                 "release_request.pdf",
-                parameters,
-                "PORT_OF_ENTRY_DETENTION");
+                parameters);
     }
 
     public StreamedContent getSampleRequestFile() {
@@ -2153,8 +2150,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "portOfEntryDetentionSampleRequestForm",
                 "sample_request.pdf",
-                parameters,
-                "PORT_OF_ENTRY_DETENTION");
+                parameters);
     }
 
     public StreamedContent getNoticeOfReleaseFromDetentionFile() {
@@ -2229,8 +2225,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "noticeOfReleaseFromDetentionForm",
                 "release_notice.pdf",
-                parameters,
-                "DOMESTIC_MARKET_DETENTION");
+                parameters);
     }
 
     public StreamedContent getApplicationForRehabilitationFile() {
@@ -2273,8 +2268,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "applicationForRehabilitationForm",
                 "appliacation_for_rehab.pdf",
-                parameters,
-                "PORT_OF_ENTRY_DETENTION");
+                parameters);
     }
 
     public StreamedContent getVerificationReportFile() {
@@ -2316,8 +2310,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "verificationReportForm",
                 "verification_report.pdf",
-                parameters,
-                "VERIFICATION_REPORT"); // edit tk
+                parameters);
     }
 
     public String getComplianceSurveyProductNames() {
@@ -2433,28 +2426,28 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
 
         if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
-            //if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
-            em.getTransaction().begin();
+            if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
+                em.getTransaction().begin();
 
-            int year = BusinessEntityUtils.getCurrentYear();
-            currentComplianceSurvey. // tk BSJ-D42- to be made option?
-                    setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
-                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+                int year = BusinessEntityUtils.getCurrentYear();
+                currentComplianceSurvey. // tk BSJ-D42- to be made option?
+                        setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
+                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
-            em.getTransaction().commit();
-            //}
+                em.getTransaction().commit();
+            }
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
-            //if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
-            em.getTransaction().begin();
+            if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
+                em.getTransaction().begin();
 
-            int year = BusinessEntityUtils.getCurrentYear();
-            currentComplianceSurvey. // tk BSJ-DM42- to be made option?
-                    setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
-                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+                int year = BusinessEntityUtils.getCurrentYear();
+                currentComplianceSurvey. // tk BSJ-DM42- to be made option?
+                        setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
+                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
-            em.getTransaction().commit();
-            //}
+                em.getTransaction().commit();
+            }
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         }
 
@@ -2464,8 +2457,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             EntityManager em,
             String form,
             String fileName,
-            HashMap parameters,
-            String sequentialNumberName) {
+            HashMap parameters) {
 
         if (currentComplianceSurvey.getId() != null) {
             try {
@@ -2628,8 +2620,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                 em,
                 "noticeOfDetentionForm",
                 "detention_notice.pdf",
-                parameters,
-                "DOMESTIC_MARKET_DETENTION");
+                parameters);
     }
 
     public User getUser() {
