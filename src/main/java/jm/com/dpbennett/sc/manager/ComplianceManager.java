@@ -1367,9 +1367,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updatePOEDetention() {
         if (getCurrentComplianceSurvey().getRequestForDetentionIssuedForPortOfEntry()) {
             generateSequentialNumber("PORT_OF_ENTRY_DETENTION");
+            getCurrentComplianceSurvey().setDateOfDetention(new Date());
         }
-
-        getCurrentComplianceSurvey().setDateOfDetention(new Date());
 
         updateSurvey();
     }
@@ -1377,9 +1376,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateDMDetention() {
         if (getCurrentComplianceSurvey().getNoticeOfDetentionIssuedForDomesticMarket()) {
             generateSequentialNumber("DOMESTIC_MARKET_DETENTION");
+            getCurrentComplianceSurvey().setDateOfNoticeOfDetention(new Date());            
         }
 
-        //getCurrentComplianceSurvey().setDateOfDetention(new Date());
         updateSurvey();
     }
 
@@ -2426,7 +2425,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         EntityManager em = getEntityManager1();
 
         if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
-            if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
+            //if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
                 em.getTransaction().begin();
 
                 int year = BusinessEntityUtils.getCurrentYear();
@@ -2435,10 +2434,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                                 + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
                 em.getTransaction().commit();
-            }
+            //}
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
-            if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
+            //if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
                 em.getTransaction().begin();
 
                 int year = BusinessEntityUtils.getCurrentYear();
@@ -2447,7 +2446,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                                 + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
                 em.getTransaction().commit();
-            }
+            //}
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         }
 
