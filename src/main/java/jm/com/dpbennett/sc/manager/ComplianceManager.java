@@ -114,7 +114,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     private List<String> selectedStandardNames;
     private String selectedFactoryInspectionTemplate;
     private List<String> selectedContainerNumbers;
-    private String componentsToUpdate;
     private String shippingContainerTableToUpdate;
     private String complianceSurveyTableToUpdate;
     private Boolean isActiveDocumentStandardsOnly;
@@ -631,14 +630,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         this.shippingContainerTableToUpdate = shippingContainerTableToUpdate;
     }
 
-    public String getComponentsToUpdate() {
-        return componentsToUpdate;
-    }
-
-    public void setComponentsToUpdate(String componentsToUpdate) {
-        this.componentsToUpdate = componentsToUpdate;
-    }
-
     public List<String> getSelectedContainerNumbers() {
         return selectedContainerNumbers;
     }
@@ -749,7 +740,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         reportPeriod = "This month";
         datePeriod = new DatePeriod("This month", "month", null, null, null, null, false, false, false);
         datePeriod.initDatePeriod();
-        componentsToUpdate = ":ComplianceSurveyDialogForm";
         complianceSurveyTableToUpdate = "mainTabViewForm:mainTabView:complianceSurveysTable";
         isActiveDocumentStandardsOnly = true;
         isActiveMarketProductsOnly = true;
@@ -1805,10 +1795,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateDocumentInspectionInspector() {
 
         System.out.println("impl updateDocumentInspectionInspector");
-    }
-
-    public String getSurveyFormComponentsToUpdate() {
-        return "compliance_survey_growl";
     }
 
     public String getDateSearchField() {
