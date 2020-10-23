@@ -1030,6 +1030,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
         }
+        
+        updateSurvey();
 
     }
 
@@ -1042,7 +1044,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
         }
-
+        
+        updateSurvey();
     }
 
     public void updatePreparedBySigForReleaseRequestPOE() {
@@ -1056,6 +1059,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(null);
         }
+        
+        updateSurvey();
 
     }
 
