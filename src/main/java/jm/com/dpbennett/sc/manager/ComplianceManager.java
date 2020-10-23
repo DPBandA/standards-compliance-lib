@@ -1073,6 +1073,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
         }
+        
+        updateSurvey();
 
     }
 
@@ -1087,6 +1089,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(null);
         }
+        
+        updateSurvey();
 
     }
 
@@ -1397,7 +1401,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         if (!currentComplianceSurvey.getOtherCompanyTypes()) {
             currentComplianceSurvey.setCompanyTypes("");
         }
-        //setDirty(true);
+        
+        updateSurvey();
     }
 
     public void createNewProductInspection() {
