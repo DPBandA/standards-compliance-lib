@@ -529,6 +529,10 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void complaintProductInspectionDialogReturn() {
         getCurrentComplaint().setIsDirty(getCurrentProductInspection().getIsDirty());
     }
+    
+    public void surveyProductInspectionDialogReturn() {
+        getCurrentComplianceSurvey().setIsDirty(getCurrentProductInspection().getIsDirty());
+    }
 
     public void receivedViaDialogReturn() {
         if (getClientManager().getSelectedClient().getId() != null) {
