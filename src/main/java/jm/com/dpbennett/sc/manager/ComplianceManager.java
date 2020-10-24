@@ -1636,12 +1636,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public Boolean validatePortOfEntryDetentionData(EntityManager em) {
-        if (Job.findJobByJobNumber(em, currentComplianceSurvey.getJobNumber()) == null) {
-            PrimeFacesUtils.addMessage("Job Number Required!",
-                    "A valid job number is required if a detention request is issued.",
-                    FacesMessage.SEVERITY_ERROR);
-            return false;
-        }
+        
         if (currentComplianceSurvey.getBroker().getName().trim().equals("")) {
             PrimeFacesUtils.addMessage("Broker Required",
                     "The broker name is required if a detention request is issued.",
