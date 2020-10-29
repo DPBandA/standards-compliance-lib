@@ -1594,7 +1594,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             } else {
 
                 currentFactoryInspection.setIsDirty(false);
-                PrimeFacesUtils.addMessage("Factory inspection Saved!",
+                PrimeFacesUtils.addMessage("Factory Inspection Saved!",
                         "This factory inspection was saved",
                         FacesMessage.SEVERITY_INFO);
             }
@@ -2752,6 +2752,13 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         openDocumentStandardDialog();
 
         openStandardsBrowser();
+    }
+    
+    public void createNewDocumentStandardInDialog() {
+        currentDocumentStandard = new DocumentStandard();
+
+        openDocumentStandardDialog();
+        
     }
 
     public List<DocumentStandard> getDocumentStandards() {
