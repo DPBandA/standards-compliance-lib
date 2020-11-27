@@ -529,7 +529,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void complaintProductInspectionDialogReturn() {
         getCurrentComplaint().setIsDirty(getCurrentProductInspection().getIsDirty());
     }
-    
+
     public void surveyProductInspectionDialogReturn() {
         getCurrentComplianceSurvey().setIsDirty(getCurrentProductInspection().getIsDirty());
     }
@@ -883,12 +883,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
     public void surveyDialogReturn() {
         doSurveySearch();
-        
+
         if (currentComplianceSurvey.getIsDirty()) {
             PrimeFacesUtils.addMessage("Survey was NOT saved",
                     "The recently edited survey was not saved", FacesMessage.SEVERITY_WARN);
             PrimeFaces.current().ajax().update("headerForm:growl3");
-        }        
+        }
     }
 
     public void complaintDialogReturn() {
@@ -1034,7 +1034,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setAuthSigDateForDetentionRequestPOE(null);
             currentComplianceSurvey.setAuthSigForDetentionRequestPOE(null);
         }
-        
+
         updateSurvey();
 
     }
@@ -1048,7 +1048,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setInspectorSigDateForSampleRequestPOE(null);
             currentComplianceSurvey.setInspectorSigForSampleRequestPOE(null);
         }
-        
+
         updateSurvey();
     }
 
@@ -1063,7 +1063,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setPreparedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setPreparedByEmployeeForReleaseRequestPOE(null);
         }
-        
+
         updateSurvey();
 
     }
@@ -1077,7 +1077,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setAuthSigDateForNoticeOfDentionDM(null);
             currentComplianceSurvey.setAuthSigForNoticeOfDentionDM(null);
         }
-        
+
         updateSurvey();
 
     }
@@ -1093,7 +1093,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
             currentComplianceSurvey.setApprovedBySigForReleaseRequestPOE(null);
             currentComplianceSurvey.setApprovedByEmployeeForReleaseRequestPOE(null);
         }
-        
+
         updateSurvey();
 
     }
@@ -1334,6 +1334,25 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         getCurrentComplianceSurvey().setIsDirty(true);
     }
 
+    public void updateCIF() {
+        // Calculate SCF
+        Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
+                getEntityManager1(), "defaultPercentageOfCIF");
+
+        if (percentOfCIF != null) {
+            getCurrentComplianceSurvey().getEntryDocumentInspection().
+                    setSCFAmountCalculated(
+                            getCurrentComplianceSurvey().getEntryDocumentInspection().getCIF()
+                            * percentOfCIF / 100);
+        }
+        else {
+           getCurrentComplianceSurvey().getEntryDocumentInspection().
+                    setSCFAmountCalculated(0.0); 
+        }
+
+        updateSurvey();
+    }
+
     public void updateComplaint() {
         getCurrentComplaint().setIsDirty(true);
     }
@@ -1385,7 +1404,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void updateDMDetention() {
         if (getCurrentComplianceSurvey().getNoticeOfDetentionIssuedForDomesticMarket()) {
             generateSequentialNumber("DOMESTIC_MARKET_DETENTION");
-            getCurrentComplianceSurvey().setDateOfNoticeOfDetention(new Date());            
+            getCurrentComplianceSurvey().setDateOfNoticeOfDetention(new Date());
         }
 
         updateSurvey();
@@ -1405,7 +1424,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         if (!currentComplianceSurvey.getOtherCompanyTypes()) {
             currentComplianceSurvey.setCompanyTypes("");
         }
-        
+
         updateSurvey();
     }
 
@@ -1636,7 +1655,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public Boolean validatePortOfEntryDetentionData(EntityManager em) {
-        
+
         if (currentComplianceSurvey.getBroker().getName().trim().equals("")) {
             PrimeFacesUtils.addMessage("Broker Required",
                     "The broker name is required if a detention request is issued.",
@@ -2427,26 +2446,26 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         if (sequentialNumberName.equals("PORT_OF_ENTRY_DETENTION")) {
             //if (currentComplianceSurvey.getPortOfEntryDetentionNumber() == null) {
-                em.getTransaction().begin();
+            em.getTransaction().begin();
 
-                int year = BusinessEntityUtils.getCurrentYear();
-                currentComplianceSurvey. // tk BSJ-D42- to be made option?
-                        setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
-                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+            int year = BusinessEntityUtils.getCurrentYear();
+            currentComplianceSurvey. // tk BSJ-D42- to be made option?
+                    setPortOfEntryDetentionNumber("BSJ-D42-" + year + "-"
+                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
-                em.getTransaction().commit();
+            em.getTransaction().commit();
             //}
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         } else if (sequentialNumberName.equals("DOMESTIC_MARKET_DETENTION")) {
             //if (currentComplianceSurvey.getDomesticMarketDetentionNumber() == null) {
-                em.getTransaction().begin();
+            em.getTransaction().begin();
 
-                int year = BusinessEntityUtils.getCurrentYear();
-                currentComplianceSurvey. // tk BSJ-DM42- to be made option?
-                        setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
-                                + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
+            int year = BusinessEntityUtils.getCurrentYear();
+            currentComplianceSurvey. // tk BSJ-DM42- to be made option?
+                    setDomesticMarketDetentionNumber("BSJ-DM42-" + year + "-"
+                            + BusinessEntityUtils.getFourDigitString(SequenceNumber.findNextSequentialNumberByNameAndByYear(em, sequentialNumberName, year)));
 
-                em.getTransaction().commit();
+            em.getTransaction().commit();
             //}
             //parameters.put("referenceNumber", currentComplianceSurvey.getReferenceNumber());
         }
@@ -2753,12 +2772,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         openStandardsBrowser();
     }
-    
+
     public void createNewDocumentStandardInDialog() {
         currentDocumentStandard = new DocumentStandard();
 
         openDocumentStandardDialog();
-        
+
     }
 
     public List<DocumentStandard> getDocumentStandards() {
