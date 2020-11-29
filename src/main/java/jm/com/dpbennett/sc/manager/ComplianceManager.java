@@ -1335,7 +1335,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void updateCIF() {
-        // Calculate SCF
+        // Calculate SCF...
         Double percentOfCIF = (Double) SystemOption.getOptionValueObject(
                 getEntityManager1(), "defaultPercentageOfCIF");
 
