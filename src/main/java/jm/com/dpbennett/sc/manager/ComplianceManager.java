@@ -196,8 +196,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
 
         setEdit(false);
-
-        //PrimeFaces.current().executeScript("PF('factoryInspectionComponentDialog').hide();");
+        
     }
 
     public void deleteFactoryInspectionComponent() {
@@ -1597,6 +1596,12 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
             System.out.println(e);
         }
+    }   
+    
+    public void saveAndCloseComplianceSurvey() {
+        saveComplianceSurvey();
+        
+        PrimeFacesUtils.closeDialog(null);
     }
 
     public void saveFactoryInspection() {
@@ -1680,7 +1685,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void closeComplianceSurvey() {
-        PrimeFacesUtils.closeDialog(null);
+        PrimeFaces.current().executeScript("PF('saveSurveyConfirmationDialog').show();");
+               
     }
 
     public void closeDialog() {
