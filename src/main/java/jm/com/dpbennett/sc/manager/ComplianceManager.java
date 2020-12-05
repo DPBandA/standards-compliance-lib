@@ -1797,6 +1797,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
     }
+    
+    public List<SelectItem> getEnforcementActions() {
+
+        return getStringListAsSelectItems(getEntityManager1(), "enforcementActions");
+    }
 
     public List<SelectItem> getShippingContainerDetainPercentages() {
         return getStringListAsSelectItems(getEntityManager1(), "shippingContainerPercentageList");
