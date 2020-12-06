@@ -1602,6 +1602,18 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         PrimeFacesUtils.closeDialog(null);
     }
+    
+    public void saveAndCloseComplaint() {
+        saveComplaint();
+
+        PrimeFacesUtils.closeDialog(null);
+    }
+    
+    public void saveAndCloseFactoryInspection() {
+        saveFactoryInspection();
+
+        PrimeFacesUtils.closeDialog(null);
+    }
 
     public void saveFactoryInspection() {
         EntityManager em = getEntityManager1();
@@ -1684,8 +1696,32 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void closeComplianceSurvey() {
+        
         if (getCurrentComplianceSurvey().getIsDirty()) {
             PrimeFaces.current().executeScript("PF('saveSurveyConfirmationDialog').show();");
+        }
+        else {
+            closeDialog();
+        }
+    }
+    
+    public void closeComplaintDialog() {
+        
+        if (getCurrentComplaint().getIsDirty()) {
+            PrimeFaces.current().executeScript("PF('saveComplaintConfirmationDialog').show();");
+        }
+        else {
+            closeDialog();
+        }
+    }
+    
+    public void closeFactoryInspectionDialog() {
+        
+        if (getCurrentFactoryInspection().getIsDirty()) {
+            PrimeFaces.current().executeScript("PF('saveFactoryInspectionConfirmationDialog').show();");
+        }
+        else {
+            closeDialog();
         }
     }
 
