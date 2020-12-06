@@ -196,7 +196,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         }
 
         setEdit(false);
-        
+
     }
 
     public void deleteFactoryInspectionComponent() {
@@ -1343,10 +1343,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
                     setSCFAmountCalculated(
                             getCurrentComplianceSurvey().getEntryDocumentInspection().getCIF()
                             * percentOfCIF / 100);
-        }
-        else {
-           getCurrentComplianceSurvey().getEntryDocumentInspection().
-                    setSCFAmountCalculated(0.0); 
+        } else {
+            getCurrentComplianceSurvey().getEntryDocumentInspection().
+                    setSCFAmountCalculated(0.0);
         }
 
         updateSurvey();
@@ -1596,11 +1595,11 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
             System.out.println(e);
         }
-    }   
-    
+    }
+
     public void saveAndCloseComplianceSurvey() {
         saveComplianceSurvey();
-        
+
         PrimeFacesUtils.closeDialog(null);
     }
 
@@ -1685,8 +1684,9 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     }
 
     public void closeComplianceSurvey() {
-        PrimeFaces.current().executeScript("PF('saveSurveyConfirmationDialog').show();");
-               
+        if (getCurrentComplianceSurvey().getIsDirty()) {
+            PrimeFaces.current().executeScript("PF('saveSurveyConfirmationDialog').show();");
+        }
     }
 
     public void closeDialog() {
@@ -1797,7 +1797,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         return getStringListAsSelectItems(getEntityManager1(), "productStatusList");
     }
-    
+
     public List<SelectItem> getEnforcementActions() {
 
         return getStringListAsSelectItems(getEntityManager1(), "enforcementActions");
@@ -2336,7 +2336,7 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         } else {
             parameters.put("samplesToBeDisposed", "");
         }
-        
+
         return getComplianceSurveyFormPDFFile(
                 em,
                 "verificationReportForm",
