@@ -663,10 +663,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
         return ":mainTabViewForm:mainTabView:complianceSurveysTable,:mainTabViewForm:mainTabView:documentInspectionsTable";
     }
 
-//    public String getProductTablesToUpdate() {
-//
-//        return ":ComplianceSurveyDialogForm:complianceSurveyTabView:marketProductsTable";
-//    }
     public List<SelectItem> getDocumentStamps() {
         ArrayList stamps = new ArrayList();
         stamps.add(new SelectItem("", ""));
