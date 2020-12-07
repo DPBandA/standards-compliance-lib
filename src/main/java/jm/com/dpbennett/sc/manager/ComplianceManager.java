@@ -670,6 +670,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
 
         return stamps;
     }
+    
+    public List<SelectItem> getProfileFlags() {
+        ArrayList flags = new ArrayList();
+        flags.add(new SelectItem("", ""));
+        flags.addAll(getStringListAsSelectItems(getEntityManager1(), "profileFlags"));
+
+        return flags;
+    }
 
     public List<String> completeJobNumber(String query) {
         List<String> jobNumbers = new ArrayList<>();
