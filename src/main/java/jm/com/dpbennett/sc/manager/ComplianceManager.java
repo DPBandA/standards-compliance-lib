@@ -63,6 +63,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -1286,8 +1287,8 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public void editComplianceSurveyRetailOutlet() {
     }
 
-    public void updateMarketProductForProductInspection() {
-
+    public void updateMarketProductForProductInspection(SelectEvent<MarketProduct> event) {
+                
         // Update category, brand etc from market product field.
         if (!getCurrentProductInspection().getMarketProduct().getCategories().isEmpty()) {
             getCurrentProductInspection().setProductCategory(
