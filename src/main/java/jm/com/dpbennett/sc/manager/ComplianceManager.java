@@ -709,7 +709,6 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public List getTypesOfEstablishment() {
         ArrayList types = new ArrayList();
 
-        types.add(new SelectItem(" ", " "));
         switch (getCurrentComplianceSurvey().getSurveyLocationType()) {
             case "Site":
                 types.addAll(getStringListAsSelectItems(getEntityManager1(), "siteTypesOfEstablishment"));
