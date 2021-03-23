@@ -771,6 +771,14 @@ public class ComplianceManager implements Serializable, AuthenticationListener {
     public int getNumFactoryInspectionsFound() {
         return getFactoryInspections().size();
     }
+    
+    public int getNumComplaintsFound() {
+        return getComplaints().size();
+    }    
+    
+    public int getNumSurveysFound() {
+        return getComplianceSurveys().size();
+    }
 
     public void editCurrentFactoryInspection() {
         editFactoryInspection();
